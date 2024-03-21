@@ -10,32 +10,13 @@ local tangle = {}
 local function get_file_name (code_block)
   local file_name = code_block.attributes["code_file"]
   if file_name == nil then
-    file_name = "Untitled"
+    file_name = "Untitled.lua"
   end
   return file_name
 end
 
-local function get_file_extension (code_block)
-  local file_extension = code_block.attributes["code_extension"]
-  if file_extension == nil then
-    file_extension = "lua"
-  end
-  return file_extension
-end
-
-local function get_file_path (code_block)
-  local file_path = code_block.attributes["code_path"]
-  if file_path == nil then
-    file_path = ""
-  end
-  return file_path
-end
-
 local function get_file (code_block)
-  local file_name = get_file_name(code_block)
-  local file_extension = get_file_extension(code_block)
-  local file_path = get_file_path(code_block)
-  local full_path = file_path .. file_name .. "." .. file_extension
+  local full_path = get_file_name(code_block)
   local file = io.open(full_path, "a")
   return full_path, file
 end
