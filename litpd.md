@@ -45,12 +45,57 @@ composed of two programs.
 
 ## litpd.lua CLI Program
 
+The `litpd.lua` program provides a command line interface to the literate
+programming tool. It allows us to run the pandoc conversion of the literate
+program document into the publishable document and the runnable program using
+the `mdtangle.lua` filter as well as compile the output into proper files at
+the proper locations.
+
+The program has the following parts:
+
+1. **Program documentation**
+2. **Extract program arguments & check required arguments**
+3. **Construct the pandoc command**
+4. **Run the pandoc command and check for errors**
+
+We will discuss each part one by one.
+
+### Program Docs
+
+This part is self-explanatory and provides the header of the program
+in standard lua documentation format.
+
 ```lua {code_file="litpd.lua"}
 --- litpd.lua - Main CLI program for litpd tool.
 --
 -- license: MIT see LICENSE file
 -- date: 21/03/2024
 -- author: Abhishek Mishra
+```
+
+### Program Arguments
+
+In this section of the program, we first construct the `args` table from the
+program arguments.
+
+* The `script_path` stores the first argument which is usually the name of
+  the lua program being run, if this is run from a standard lua executable.
+* In case the `script_path` contains any windows `\` backslash path separators,
+  we replace them with `/` slashes.
+* The we match anything before the last `\` of the `script_path` as the path
+  of the directory containing the program, and store the result in `litmd_home`.
+* Next we define a function `show_usage` which prints the usage of the command,
+  this is used when the user does not pass the proper expected arguments to the
+  command.
+* Finally we look at the arguments:
+  * If the length of the args is 0, then we print usage and exit.
+  * If the first argument (i.e. the input literate programming document) is
+    not provided, then we print the usage and exit. Else we store the input file
+    name in `input_file`.
+  * The rest of the arguments are assumed to be pandoc arguments and are stored
+    in a separate table called `options`.
+
+```lua {code_file="litpd.lua"}
 
 -- get the arguments from the command line
 local args = {...}
@@ -86,6 +131,24 @@ local options = {}
 for i = 2, #args do
   table.insert(options, args[i])
 end
+```
+
+### Construct and Display Pandoc Command
+
+In the next section of the program we now construct the pandoc command to run
+such that both the output document, and output code are generated correctly.
+
+* The `TANGLE_FILTER` variable is created to store the path to the lua pandoc
+  filter which will extract the code from the input document and write it to
+  individual source code files.
+* The `PANDOC_CMD` variable stores a string which passes the lua-filter arg and
+  the markdown source type setting to the pandoc command.
+* Then we construct the command to be run in a variable called `cmd` from its
+  constituent parts. First the `PANDOC_CMD` then the `input_file` and finally
+  the rest of the args in the table `options` are added to the string `cmd`.
+* Once constructed the `cmd` string is displayed on the terminal.
+
+```lua {code_file="litpd.lua"}
 
 local TANGLE_FILTER = litmd_home .. "mdtangle.lua"
 local PANDOC_CMD = "pandoc --lua-filter=" .. TANGLE_FILTER .. " --from=markdown "
@@ -101,6 +164,18 @@ end
 
 -- display the command to be executed
 print("Executing: " .. cmd)
+```
+
+### Run the Pandoc Command
+
+The last few lines of the program run the constructed `cmd` string using
+the `io.popen` library call. The call returns a handle to the output, which is
+stored in `handle`. We read the output from this output stream into a variable
+called `result` and then close the `handle`.
+
+The `result` is printed to the terminal. And then the program is done.
+
+```lua {code_file="litpd.lua"}
 
 -- execute the command
 local handle = io.popen(cmd)
