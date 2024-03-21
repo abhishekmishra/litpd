@@ -42,3 +42,6 @@ luac.out
 # Temp files
 *.swp
 *~
+
+# dist
+dist/
