@@ -1,4 +1,4 @@
-#lit-pandoc-md
+# lit-pandoc-md
 
 Tools for literate programming using pandoc's markdown format.
 
