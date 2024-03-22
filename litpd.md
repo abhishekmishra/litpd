@@ -4,6 +4,12 @@ date:   21/03/2024
 author: Abhishek Mishra
 ---
 
+__Revisions__
+
+|Version  |Date      |Comments                       |
+|---------|----------|-------------------------------|
+|0.1a     |21/03/2024|Initial version                |
+
 # Introduction
 
 This document describes a simple [literate programming][1] tool. It is
@@ -354,3 +360,22 @@ return {
   tangle
 }
 ```
+
+# Future Plans
+
+This is a fairly new program. As I use it in my daily programming workflow,
+I will make changes.
+
+* **Version History**: All changes will be noted in the version history section 
+  at the top of the document.
+* **Bug Fixes**: I've only uesd this to write a few programs, and therefore I'm
+  sure there are several bugs lurking in the corners. They will be fixed, and
+  the document updated accordingly. 
+* **New Features**: I see a few things which might be useful in the future.
+  * **Out-of-order Code Blocks**: Currently the program files are generated with
+    content in the order it appears in fenced code blocks in the input document.
+    This is restrictive, and sometimes one might want to introduce program
+    sections in a different sequence. This is a possible future enhancement.
+  * **Ignore Code Blocks**: Some code blocks might just be examples or asides,
+    and need not end up in the final program files. There should be a mechanism
+    to ignore such code blocks.
