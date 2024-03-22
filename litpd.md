@@ -15,7 +15,7 @@ a lua filter to process the code blocks in the literate program document to
 generate output programs in their own files.
 
 This tool is itself written as a literate program and can be found at
-TODO: link
+[litpd][7]
 
 ## What is Literate Programming?
 
@@ -30,6 +30,7 @@ target programming language.
 [1]: https://en.wikipedia.org/wiki/Literate_programming
 [3]: https://pandoc.org/
 [2]: https://www-cs-faculty.stanford.edu/~knuth/lp.html
+[7]: https://github.com/abhishekmishra/lit-pandoc-md
 
 # The litpd Program
 
@@ -195,6 +196,28 @@ print(result)
 
 ## Filter Program - mdtangle.lua
 
+The `mdtangle.lua` program is a [pandoc lua filter][7]. A pandoc filter is a
+program which is executed by the pandoc program during its filtration phase.
+The filter has access to the abstract syntax tree (AST) of the input document. 
+The access to the AST of the input document provides the filter program the
+ability to implement transformations of the input document, or add functionality
+to the document generation process that is not part of the standard pandoc
+processing.
+
+The `mdtangle.lua` filter is only interested in the `CodeBlock` section of the
+AST which represents the code sections of the input markdown document. The
+program registers itself to read all the `CodeBlock` sections. When a new code
+block occurs, the filter program notes down its attribute named `code_file`.
+If such an attribute exists then the code inside the `CodeBlock` is written
+to the file at `code_file` in append mode.
+
+Thus the effect of the filter is to take the code blocks from the literate
+program and write them in their own target files.
+
+Lets now look at the various parts of the program.
+
+### Program Header
+
 ```lua {code_file="mdtangle.lua"}
 --- md-tangle.lua - Lua filter for pandoc to tangle code blocks into one or more
 -- files.
@@ -202,9 +225,42 @@ print(result)
 -- license: MIT see LICENSE file
 -- date: 21/03/2024
 -- author: Abhishek Mishra
+```
 
+### Module Declaration
+
+The pandoc filter API expects a lua table to be returned from the program. The
+table should contain entries for each AST node type that the filter intends to
+process.
+
+We define a table named `tangle` which will have just one entry `CodeBlock` by
+the end of the program. `tangle` will be returned to pandoc as the definition
+of the filter module.
+
+```lua {code_file="mdtangle.lua"}
 local tangle = {}
 
+```
+
+### Read `code_file` Attribute
+
+As discussed earlier we have made one addition to the pandoc markdown format,
+to support literate programming. Each code block which will be generated into
+its own file must specify the output program file name in the fenced code block.
+This output program file is specified as the value of a special attribute
+`code_file` of the fenced code block.
+
+The function `get_file_name` accepts a `code_block` value as argument. This
+`code_block` is received by the `CodeBlock` handler in our program. Therefore it
+is a pandoc object which has an `attributes` table.
+
+The function retrieves the `code_file` value and stores it in `file_name`. If
+there is no `code_file` defined for the fenced block, then it is provided a
+default file name.
+
+The `file_name` is returned to the caller.
+
+```lua {code_file="mdtangle.lua"}
 local function get_file_name (code_block)
   local file_name = code_block.attributes["code_file"]
   if file_name == nil then
@@ -212,7 +268,24 @@ local function get_file_name (code_block)
   end
   return file_name
 end
+```
 
+### File I/O
+
+The program defines three functions to perform I/O to the output program
+file(s).
+
+* `get_file`: Takes the `code_block` as argument, and gets the `full_path` of
+  the file mentioned in the attributes of the fenced code blcok. The it opens a 
+  file in append node for the given `full_path`. Both `full_path` and `file`
+  are returned to the caller.
+* `write_code_block`: This function takes a `code_block` and a `file` already
+  opened to write it. It writes the content of the `code_block` followed
+  by a newline in the `file`.
+* `close_file`: closes the given `file`.
+
+
+```lua {code_file="mdtangle.lua"}
 local function get_file (code_block)
   local full_path = get_file_name(code_block)
   local file = io.open(full_path, "a")
@@ -228,6 +301,22 @@ end
 local function close_file (file)
   file:close()
 end
+```
+
+### `CodeBlock` AST Hook
+
+The `CodeBlock` function in the filter module will be called by pandoc when it
+encounters a code block in the input markdown document. The only argument of
+the function is `code_block` which gets the text of the code written in the
+fenced code block.
+
+* We retrieve the `full_path` to the `code_block`, and the corresponding writable
+`file` object using the `get_file` function defined above.
+* Then the program writes the `code_block` to the `file` using the function
+  `write_code_block`.
+* Finally we close the `file` using the `close_file` function.
+
+```lua {code_file="mdtangle.lua"}
 
 function tangle.CodeBlock (code_block)
   local full_path, file = get_file(code_block)
@@ -235,6 +324,13 @@ function tangle.CodeBlock (code_block)
   write_code_block(code_block, file)
   close_file(file)
 end
+```
+
+### Module Export
+
+Lastly, we export the module for use in pandoc.
+
+```lua {code_file="mdtangle.lua"}
 
 return {
   tangle
