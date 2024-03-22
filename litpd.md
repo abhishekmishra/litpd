@@ -31,7 +31,7 @@ target programming language.
 [3]: https://pandoc.org/
 [2]: https://www-cs-faculty.stanford.edu/~knuth/lp.html
 
-# litpd Program
+# The litpd Program
 
 The litpd program is written in the [Lua programming language][4]. It is
 composed of two programs.
@@ -43,7 +43,7 @@ composed of two programs.
    program is to run during the filter phase of document generation and extract
    the source code of the literate program into proper output program files.
 
-## litpd.lua CLI Program
+## CLI Program - litpd.lua
 
 The `litpd.lua` program provides a command line interface to the literate
 programming tool. It allows us to run the pandoc conversion of the literate
@@ -60,7 +60,7 @@ The program has the following parts:
 
 We will discuss each part one by one.
 
-### Program Docs
+### Program Header
 
 This part is self-explanatory and provides the header of the program
 in standard lua documentation format.
@@ -189,7 +189,7 @@ handle:close()
 print(result)
 ```
 
-## mdtanble.lua Filter Program
+## Filter Program - mdtangle.lua
 
 ```lua {code_file="mdtangle.lua"}
 --- md-tangle.lua - Lua filter for pandoc to tangle code blocks into one or more
