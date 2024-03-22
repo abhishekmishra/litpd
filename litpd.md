@@ -30,7 +30,7 @@ target programming language.
 [1]: https://en.wikipedia.org/wiki/Literate_programming
 [3]: https://pandoc.org/
 [2]: https://www-cs-faculty.stanford.edu/~knuth/lp.html
-[7]: https://github.com/abhishekmishra/lit-pandoc-md
+[7]: https://github.com/abhishekmishra/litpd
 
 # The litpd Program
 
