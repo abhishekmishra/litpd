@@ -43,6 +43,10 @@ composed of two programs.
    program is to run during the filter phase of document generation and extract
    the source code of the literate program into proper output program files.
 
+[4]: https://lua.org/about.html
+[5]: https://pandoc.org/MANUAL.html#pandocs-markdown
+[6]: https://pandoc.org/lua-filters.html
+
 ## CLI Program - litpd.lua
 
 The `litpd.lua` program provides a command line interface to the literate
