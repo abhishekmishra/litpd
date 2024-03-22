@@ -34,8 +34,26 @@ target programming language.
 
 # The litpd Program
 
-The litpd program is written in the [Lua programming language][4]. It is
-composed of two programs.
+The litpd program is written in the [Lua programming language][4]. The goal of
+the program is two-fold:
+1. **Readable Program**: Generate a publishable/printable Program Description in HTML or PDF formats.
+2. **Runnable Program**: Separate out and/or merge code blocks into individual
+   program files so that they can be used as a normal program in the target
+   language.
+
+The program uses **pandoc** to perform the generation of the final readable
+document with minor adjustments. Therefore this part of the program simply
+delegates to pandoc.
+
+To generate the source code in proper files and structure, we inject a lua
+filter program into the pandoc processing flow. This program extracts the
+code from the document and writes it to the target program file(s).
+
+The approach is also described in the High-level design diagram below.
+
+![High Level Design of litpd](HLDDiagram.png)
+
+Therefore, the **litpd** application is composed of two programs.
 
 1. **litpd.lua**: This program is the main cli tool used to generate the
    publishable document and the runnable program from the input literate
