@@ -17,6 +17,7 @@ $(BUILD_DIR):
 $(BUILD_DIR)/%.html: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
 	mv *.lua $(BUILD_DIR)/
+	cp HLDDiagram.png $(BUILD_DIR)/
 
 $(BUILD_DIR)/%.pdf: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@

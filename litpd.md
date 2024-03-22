@@ -51,7 +51,7 @@ code from the document and writes it to the target program file(s).
 
 The approach is also described in the High-level design diagram below.
 
-![High Level Design of litpd](HLDDiagram.png)
+<img src="HLDDiagram.png" alt="High Level Design of litpd" width="100%" />
 
 Therefore, the **litpd** application is composed of two programs.
 
