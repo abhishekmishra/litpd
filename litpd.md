@@ -262,6 +262,7 @@ the end of the program. `tangle` will be returned to pandoc as the definition
 of the filter module.
 
 ```lua {code_file="mdtangle.lua"}
+
 local tangle = {}
 
 ```
@@ -279,18 +280,14 @@ The function `get_file_name` accepts a `code_block` value as argument. This
 is a pandoc object which has an `attributes` table.
 
 The function retrieves the `code_file` value and stores it in `file_name`. If
-there is no `code_file` defined for the fenced block, then it is provided a
-default file name.
+there is no `code_file` defined for the fenced block, then its value is `nil`.
 
 The `file_name` is returned to the caller.
 
 ```lua {code_file="mdtangle.lua"}
+
 local function get_file_name (code_block)
-  local file_name = code_block.attributes["code_file"]
-  if file_name == nil then
-    file_name = "Untitled.lua"
-  end
-  return file_name
+  return code_block.attributes["code_file"]
 end
 ```
 
@@ -310,8 +307,12 @@ file(s).
 
 
 ```lua {code_file="mdtangle.lua"}
+
 local function get_file (code_block)
   local full_path = get_file_name(code_block)
+  if full_path == nil then
+    return nil, nil
+  end
   local file = io.open(full_path, "a")
   return full_path, file
 end
@@ -336,7 +337,9 @@ fenced code block.
 
 * We retrieve the `full_path` to the `code_block`, and the corresponding writable
 `file` object using the `get_file` function defined above.
-* Then the program writes the `code_block` to the `file` using the function
+* If the returned `full_path` is `nil`, then there is nothing to do and the
+  method returns.
+* Otherwise the program writes the `code_block` to the `file` using the function
   `write_code_block`.
 * Finally we close the `file` using the `close_file` function.
 
@@ -344,6 +347,9 @@ fenced code block.
 
 function tangle.CodeBlock (code_block)
   local full_path, file = get_file(code_block)
+  if full_path == nil then
+    return
+  end
   print("Tangling code block at " .. full_path)
   write_code_block(code_block, file)
   close_file(file)
