@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-PANDOC_CMD = lua ../litmd.lua 
+PANDOC_CMD = lua ../dist/litpd.lua 
 PANDOC_OPTS = --to=html --standalone
 
 TEST_FILES = $(wildcard *.md)
