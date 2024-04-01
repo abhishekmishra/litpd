@@ -182,7 +182,8 @@ such that both the output document, and output code are generated correctly.
 ```lua {code_file="litpd.lua"}
 
 local TANGLE_FILTER = litmd_home .. "mdtangle.lua"
-local PANDOC_CMD = "pandoc --lua-filter=" .. TANGLE_FILTER .. " --from=markdown "
+local PANDOC_CMD = "pandoc --lua-filter=" ..
+            TANGLE_FILTER .. " --from=markdown "
 
 -- create the final command, start with the pandoc command
 local cmd = PANDOC_CMD
