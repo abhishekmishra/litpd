@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test
 
 PANDOC_CMD = lua ./bootstrap/litpd.lua 
 PANDOC_OPTS_HTML = --to=html --standalone --toc
@@ -22,6 +22,9 @@ $(BUILD_DIR)/%.html: %.md
 $(BUILD_DIR)/%.pdf: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
 	mv *.lua $(BUILD_DIR)/
+
+test:
+	lua run_tests.lua
 
 clean:
 	rm -f $(BUILD_DIR)/*.html

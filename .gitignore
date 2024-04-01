@@ -43,5 +43,6 @@ luac.out
 *.swp
 *~
 
-# dist
+# dist, and out directories
 dist/
+out/
