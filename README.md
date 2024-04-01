@@ -67,7 +67,7 @@ print('hello')
 If we run the following litpd command...
 
 ```bash
-lua <litpd_dir/dist/litpd.lua hello.md --to=html
+lua <litpd_dir>/dist/litpd.lua hello.md --to=html
 ```
 
 Two files will be generated in the current folder:
