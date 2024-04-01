@@ -1,4 +1,4 @@
---- litmd.lua - Main program for lit-pandoc-md tool
+--- litpd.lua - Main CLI program for litpd tool.
 --
 -- license: MIT see LICENSE file
 -- date: 21/03/2024
