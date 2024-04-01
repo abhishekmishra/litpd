@@ -1,3 +1,4 @@
+<!-- vim: set tw=80: -->
 ---
 title:  "litpd: Literate Programming for Pandoc Markdown"
 date:   21/03/2024
@@ -25,13 +26,13 @@ This tool is itself written as a literate program and can be found at
 
 ## What is Literate Programming?
 
-For those unfamiliar to the term "literate programming", I would refer you to 
+For those unfamiliar to the term "literate programming", I would refer you to
 the excellent writings on the topic by [Donald Knuth][2]. In short literate
-programming is about program definition in a document which is written as a
-work of literature. Therefore one of the primary objectives of a literate
-program is to be read and enjoyed by another programmer. The literate program
-document can also be used to create an executable program or a library in the
-target programming language.
+programming is about program definition in a document which is written as a work
+of literature. Therefore one of the primary objectives of a literate program is
+to be read and enjoyed by another programmer. The literate program document can
+also be used to create an executable program or a library in the target
+programming language.
 
 [1]: https://en.wikipedia.org/wiki/Literate_programming
 [3]: https://pandoc.org/
@@ -42,7 +43,8 @@ target programming language.
 
 The litpd program is written in the [Lua programming language][4]. The goal of
 the program is two-fold:
-1. **Readable Program**: Generate a publishable/printable Program Description in HTML or PDF formats.
+1. **Readable Program**: Generate a publishable/printable Program Description in
+   HTML or PDF formats.
 2. **Runnable Program**: Separate out and/or merge code blocks into individual
    program files so that they can be used as a normal program in the target
    language.
@@ -222,7 +224,7 @@ print(result)
 
 The `mdtangle.lua` program is a [pandoc lua filter][7]. A pandoc filter is a
 program which is executed by the pandoc program during its filtration phase.
-The filter has access to the abstract syntax tree (AST) of the input document. 
+The filter has access to the abstract syntax tree (AST) of the input document.
 The access to the AST of the input document provides the filter program the
 ability to implement transformations of the input document, or add functionality
 to the document generation process that is not part of the standard pandoc
@@ -297,12 +299,12 @@ The program defines three functions to perform I/O to the output program
 file(s).
 
 * `get_file`: Takes the `code_block` as argument, and gets the `full_path` of
-  the file mentioned in the attributes of the fenced code blcok. The it opens a 
-  file in append node for the given `full_path`. Both `full_path` and `file`
-  are returned to the caller.
+  the file mentioned in the attributes of the fenced code blcok. The it opens a
+  file in append node for the given `full_path`. Both `full_path` and `file` are
+  returned to the caller.
 * `write_code_block`: This function takes a `code_block` and a `file` already
-  opened to write it. It writes the content of the `code_block` followed
-  by a newline in the `file`.
+  opened to write it. It writes the content of the `code_block` followed by a
+  newline in the `file`.
 * `close_file`: closes the given `file`.
 
 
@@ -335,8 +337,8 @@ encounters a code block in the input markdown document. The only argument of
 the function is `code_block` which gets the text of the code written in the
 fenced code block.
 
-* We retrieve the `full_path` to the `code_block`, and the corresponding writable
-`file` object using the `get_file` function defined above.
+* We retrieve the `full_path` to the `code_block`, and the corresponding
+  writable `file` object using the `get_file` function defined above.
 * If the returned `full_path` is `nil`, then there is nothing to do and the
   method returns.
 * Otherwise the program writes the `code_block` to the `file` using the function
@@ -372,11 +374,11 @@ return {
 This is a fairly new program. As I use it in my daily programming workflow,
 I will make changes.
 
-* **Version History**: All changes will be noted in the version history section 
+* **Version History**: All changes will be noted in the version history section
   at the top of the document.
 * **Bug Fixes**: I've only uesd this to write a few programs, and therefore I'm
   sure there are several bugs lurking in the corners. They will be fixed, and
-  the document updated accordingly. 
+  the document updated accordingly.
 * **New Features**: I see a few things which might be useful in the future.
   * **Out-of-order Code Blocks**: Currently the program files are generated with
     content in the order it appears in fenced code blocks in the input document.
