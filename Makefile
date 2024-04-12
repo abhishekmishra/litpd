@@ -18,12 +18,14 @@ $(BUILD_DIR)/%.html: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
 	mv litpd.lua $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
+	mv codeidextract.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
 
 $(BUILD_DIR)/%.pdf: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
 	mv litpd.lua $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
+	mv codeidextract.lua $(BUILD_DIR)/
 
 test:
 	lua run_tests.lua
@@ -32,6 +34,7 @@ luaenv:
 	@echo "Setting up luaenv... "
 	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
 	hererocks .luaenv --lua 5.4 --luarocks latest
+	powershell ".luaenv/bin/activate.ps1 ; luarocks install busted"
 
 clean:
 	rm -f $(BUILD_DIR)/*.html
