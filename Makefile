@@ -1,4 +1,4 @@
-.PHONY: all clean test
+.PHONY: all clean test luaenv
 
 PANDOC_CMD = lua ./bootstrap/litpd.lua 
 PANDOC_OPTS_HTML = --to=html --standalone --toc
@@ -25,6 +25,11 @@ $(BUILD_DIR)/%.pdf: %.md
 
 test:
 	lua run_tests.lua
+
+luaenv:
+	@echo "Setting up luaenv... "
+	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
+	hererocks .luaenv --lua 5.4 --luarocks latest
 
 clean:
 	rm -f $(BUILD_DIR)/*.html

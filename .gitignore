@@ -46,3 +46,4 @@ luac.out
 # dist, and out directories
 dist/
 out/
+.luaenv/
