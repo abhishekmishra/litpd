@@ -1,5 +1,17 @@
 require 'busted.runner'()
 
+--- check if given path exists
+---@param path string
+---@return boolean
+local function exists(path)
+    local file = io.open(path, "r")
+    if file then
+        file:close()
+        return true
+    end
+    return false
+end
+
 ---@diagnostic disable: undefined-field, need-check-nil
 describe("test a literate program with no code file", function()
     local output_file = "out/test0-onlycode.html"
@@ -14,8 +26,52 @@ describe("test a literate program with no code file", function()
         os.execute(cmd)
 
         -- Check if test0-onlycode.html is generated
-        local file = io.open(output_file, "r")
-        assert.is_not_nil(file, output_file .. " is not generated")
-        file:close()
+        assert.is_true(exists(output_file))
+    end)
+end)
+
+describe("test a literate program with code file", function()
+    local output_file = "out/test1-codewfname.html"
+    local code_file = "out/helloworld.lua"
+
+    it("should generate " .. output_file, function()
+        -- delete the output file if it exists
+        os.remove(output_file)
+        os.remove(code_file)
+
+        -- Run litpd.lua on test1-onlycode.md
+        local cmd = "lua dist/litpd.lua test/data/test1-codewfname.md --to=html"
+        cmd = cmd .. " -o " .. output_file
+        os.execute(cmd)
+
+        -- Check if test1-onlycode.html is generated
+        assert.is_true(exists(output_file))
+        assert.is_true(exists(code_file))
+    end)
+end)
+
+describe("test a literate program with code ids", function()
+    local output_file = "out/test2-codeids.html"
+    local code_id1 = "fnsay.tmp"
+    local code_id2 = "sayhello.tmp"
+
+    it("should generate " .. output_file, function()
+        -- delete the output file if it exists
+        os.remove(output_file)
+        os.remove(code_id1)
+        os.remove(code_id2)
+
+        -- Run litpd.lua on test1-onlycode.md
+        local cmd = "lua dist/litpd.lua test/data/test2-codeids.md --to=html"
+        cmd = cmd .. " -o " .. output_file
+        os.execute(cmd)
+
+        assert.is_true(exists(output_file))
+        assert.is_true(exists(code_id1))
+        assert.is_true(exists(code_id2))
+
+        -- delete the code files
+        os.remove(code_id1)
+        os.remove(code_id2)
     end)
 end)
