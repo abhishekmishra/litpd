@@ -15,7 +15,7 @@ $(BUILD_DIR):
 # we need to move them to the build folder. This should not be necessary.
 
 $(BUILD_DIR)/%.html: %.md
-	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
+	powershell ".luaenv/bin/activate.ps1 ; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
 	mv litpd.lua $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
@@ -28,7 +28,7 @@ $(BUILD_DIR)/%.pdf: %.md
 	mv codeidextract.lua $(BUILD_DIR)/
 
 test:
-	lua run_tests.lua
+	powershell ".luaenv/bin/activate.ps1 ; lua run_tests.lua"
 
 luaenv:
 	@echo "Setting up luaenv... "
