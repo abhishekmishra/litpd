@@ -169,9 +169,13 @@ end
 In the next section of the program we now construct the pandoc command to run
 such that both the output document, and output code are generated correctly.
 
+* The `CODEID_FILTER` variable is created to store the path to the lua pandoc
+  filter which will extract the code from the input document which are marked
+  with code_id and write it to individual source code fragment files with the
+  same name.
 * The `TANGLE_FILTER` variable is created to store the path to the lua pandoc
-  filter which will extract the code from the input document and write it to
-  individual source code files.
+  filter which will extract the code from the input document which are marked
+  with code_file and write it to individual source code files.
 * The `PANDOC_CMD` variable stores a string which passes the lua-filter arg and
   the markdown source type setting to the pandoc command.
 * Then we construct the command to be run in a variable called `cmd` from its
@@ -181,8 +185,10 @@ such that both the output document, and output code are generated correctly.
 
 ```lua {code_file="litpd.lua"}
 
+local CODEID_FILTER= litmd_home .. "codeidextract.lua"
 local TANGLE_FILTER = litmd_home .. "mdtangle.lua"
-local PANDOC_CMD = "pandoc --lua-filter=" ..
+local PANDOC_CMD = "pandoc" .. " --lua-filter=" .. 
+            CODEID_FILTER .. " --lua-filter=" ..
             TANGLE_FILTER .. " --from=markdown "
 
 -- create the final command, start with the pandoc command
