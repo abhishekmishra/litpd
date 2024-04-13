@@ -365,6 +365,18 @@ file(s).
 
 ```lua {code_file="mdtangle.lua"}
 
+--- check if given path exists
+---@param path string
+---@return boolean
+local function exists(path)
+    local file = io.open(path, "r")
+    if file then
+        file:close()
+        return true
+    end
+    return false
+end
+
 local function get_file (code_block)
   local full_path = get_file_name(code_block)
   if full_path == nil then
@@ -376,6 +388,28 @@ end
 
 local function write_code_block (code_block, file)
   local code = code_block.text
+
+  local t = {}
+  local i = 0
+  while true do
+    i, _, code_id = string.find(code, "@<(%a+)@>", i+1)
+    if i == nil then break end
+    table.insert(t, 
+      {
+        index = i,
+        code_id = code_id
+      }
+    )
+  end
+
+  for _, v in ipairs(t) do
+    print('code id found at ', v.index, ' code_id = ', v.code_id)
+    local cidfile = v.code_id .. '.tmp'
+    if exists(cidfile) then
+      print('file for code_id', v.code_id, 'exists at', cidfile)
+    end
+  end
+
   file:write(code)
   file:write("\n")
 end
