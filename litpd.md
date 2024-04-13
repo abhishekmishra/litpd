@@ -377,6 +377,19 @@ local function exists(path)
     return false
 end
 
+--- file contents
+--@param path string
+--@return string contents
+local function file_contents(path)
+  local file = io.open(path, "r")
+  local contents = nil
+  if file then
+    contents = file:read("*all")
+    file:close()
+  end
+  return contents
+end
+
 local function get_file (code_block)
   local full_path = get_file_name(code_block)
   if full_path == nil then
@@ -407,10 +420,14 @@ local function write_code_block (code_block, file)
     local cidfile = v.code_id .. '.tmp'
     if exists(cidfile) then
       print('file for code_id', v.code_id, 'exists at', cidfile)
+      local contents = file_contents(cidfile)
+      print(contents)
+      code = code:gsub("@<" .. v.code_id .. "@>", contents)
     end
   end
 
   file:write(code)
+  print(code)
   file:write("\n")
 end
 
