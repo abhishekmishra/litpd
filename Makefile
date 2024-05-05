@@ -20,6 +20,7 @@ $(BUILD_DIR)/%.html: %.md
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
+	cp litpd.ps1 $(BUILD_DIR)/
 
 $(BUILD_DIR)/%.pdf: %.md
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
@@ -40,3 +41,4 @@ clean:
 	rm -f $(BUILD_DIR)/*.html
 	rm -f $(BUILD_DIR)/*.pdf
 	rm -f $(BUILD_DIR)/*.lua
+	rm -f $(BUILD_DIR)/*.ps1
