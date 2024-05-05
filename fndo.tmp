@@ -1,0 +1,3 @@
+function do(text)
+    print('>' .. text)
+end

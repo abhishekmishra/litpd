@@ -105,3 +105,42 @@ describe("test a program containing code id references", function()
         os.remove(code_file)
     end)
 end)
+
+describe("test a program containing two code id references", function()
+    local output_file = "out/test4-codeids.html"
+    local code_id1 = "fnsay.tmp"
+    local code_id2 = "sayhello.tmp"
+    local code_file = "hello3.lua"
+
+    it("should generate " .. output_file, function()
+        -- delete the output file if it exists
+        os.remove(output_file)
+        os.remove(code_id1)
+        os.remove(code_id2)
+        os.remove(code_file)
+
+        -- Run litpd.lua on test1-onlycode.md
+        local cmd = "lua dist/litpd.lua test/data/test4-codeid-use.md --to=html"
+        cmd = cmd .. " -o " .. output_file
+        os.execute(cmd)
+
+        -- Get contents of the output file
+        local file = io.open(code_file, "r")
+        local contents = file:read("*a")
+        file:close()
+
+        -- ensure that the code ids are replaced
+
+        assert.not_nil(string.find(contents, "function do"))
+
+        assert.is_true(exists(output_file))
+        assert.is_true(exists(code_id1))
+        assert.is_true(exists(code_id2))
+
+        -- delete the code files
+        os.remove(output_file)
+        os.remove(code_id1)
+        os.remove(code_id2)
+        os.remove(code_file)
+    end)
+end)
