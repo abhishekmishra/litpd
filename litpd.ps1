@@ -21,10 +21,23 @@ if ($args.Length -eq 0) {
 }
 
 # Check if lua interpreter is available
-if (-not (Test-Path "lua")) {
+Try {
+    (Get-Command "lua.exe" -ErrorAction Stop) | Out-Null
+} 
+Catch {
     Write-Host "Error: Lua interpreter not found"
     Write-Host "Please make sure that the lua interpreter is installed and available in the PATH"
     Write-Host "Also ensure that luafilesystem library is installed."
+    exit 1
+}
+
+# Check if pandoc is available
+Try {
+    (Get-Command "pandoc.exe" -ErrorAction Stop) | Out-Null
+} 
+Catch {
+    Write-Host "Error: Pandoc not found"
+    Write-Host "Please make sure that pandoc is installed and available in the PATH"
     exit 1
 }
 
