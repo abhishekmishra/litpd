@@ -2,5 +2,6 @@
     "Lua.diagnostics.globals": [
         "describe",
         "it"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }
