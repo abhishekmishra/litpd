@@ -421,13 +421,13 @@ local function write_code_block (code_block, file)
     if exists(cidfile) then
       print('file for code_id', v.code_id, 'exists at', cidfile)
       local contents = file_contents(cidfile)
-      print(contents)
+      -- print(contents)
       code = code:gsub("@<" .. v.code_id .. "@>", contents)
     end
   end
 
   file:write(code)
-  print(code)
+  -- print(code)
   file:write("\n")
 end
 
