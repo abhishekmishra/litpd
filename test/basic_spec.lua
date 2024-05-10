@@ -138,7 +138,7 @@ describe("test a program containing two code id references", function()
         assert.is_true(exists(code_id2))
 
         -- delete the code files
-        os.remove(output_file)
+        -- os.remove(output_file)
         os.remove(code_id1)
         os.remove(code_id2)
         os.remove(code_file)

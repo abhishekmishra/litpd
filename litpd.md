@@ -289,6 +289,13 @@ function codeidextract.CodeBlock (code_block)
   print("Extracting code id at " .. full_path)
   write_code_block(code_block, file)
   close_file(file)
+
+  -- create a label for the code block if id exists
+  local label_text = "id: " .. code_block.attributes["code_id"]
+  return {
+    pandoc.Strong(pandoc.Str(label_text)),
+    code_block
+  }
 end
 
 return {
@@ -490,7 +497,7 @@ function tangle.CodeBlock (code_block)
   write_code_block(code_block, file)
   close_file(file)
 
-  local label_text = "File: " .. full_path
+  local label_text = "file: " .. full_path
   return {
     pandoc.Strong(pandoc.Str(label_text)),
     code_block
