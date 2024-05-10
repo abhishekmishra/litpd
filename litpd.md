@@ -489,6 +489,12 @@ function tangle.CodeBlock (code_block)
   print("Tangling code block at " .. full_path)
   write_code_block(code_block, file)
   close_file(file)
+
+  local label_text = "File: " .. full_path
+  return {
+    pandoc.Strong(pandoc.Str(label_text)),
+    code_block
+  }
 end
 ```
 
