@@ -39,8 +39,11 @@ for i = 2, #args do
   table.insert(options, args[i])
 end
 
+local CODEID_FILTER= litmd_home .. "codeidextract.lua"
 local TANGLE_FILTER = litmd_home .. "mdtangle.lua"
-local PANDOC_CMD = "pandoc --lua-filter=" .. TANGLE_FILTER .. " --from=markdown "
+local PANDOC_CMD = "pandoc" .. " --lua-filter=" .. 
+            CODEID_FILTER .. " --lua-filter=" ..
+            TANGLE_FILTER .. " --from=markdown "
 
 -- create the final command, start with the pandoc command
 local cmd = PANDOC_CMD
