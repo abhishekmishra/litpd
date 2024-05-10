@@ -229,7 +229,28 @@ print(result)
 
 ## Filter Program - codeidextract.lua
 
-The `codeidextract.lua` program is a [pandoc lua filter][7].
+The `codeidextract.lua` program is a [pandoc lua filter][7]. A pandoc filter is
+a program which is executed by the pandoc program during its filtration phase.
+The filter has access to the abstract syntax tree (AST) of the input document.
+The access to the AST of the input document provides the filter program the
+ability to implement transformations of the input document, or add functionality
+to the document generation process that is not part of the standard pandoc
+processing.
+
+The `codeidextract.lua` filter is interested in the CodeBlock section of the
+AST of the input document which have an attribute named **code_id**. The value
+of the attribute **code_id** is an identifier for the block of code in the
+CodeBlock section of the document.
+
+Once the author of the document creates a **code_id** CodeBlock he/she can
+now reference this **code_id** in another CodeBlock. This allows us to build
+entire programs from fragments of code in separated CodeBlocks. The document
+introduces the separate parts of the program according to the flow of the ideas
+in the document independent of how the source code will finally be placed in
+the files.
+
+Once the filter identifies a CodeBlock with a **code_id**, it extracts the code
+into a separate temporary file assigned to each **code_id**.
 
 ```lua {code_file="codeidextract.lua"}
 
@@ -277,13 +298,7 @@ return {
 
 ## Filter Program - mdtangle.lua
 
-The `mdtangle.lua` program is a [pandoc lua filter][7]. A pandoc filter is a
-program which is executed by the pandoc program during its filtration phase.
-The filter has access to the abstract syntax tree (AST) of the input document.
-The access to the AST of the input document provides the filter program the
-ability to implement transformations of the input document, or add functionality
-to the document generation process that is not part of the standard pandoc
-processing.
+The `mdtangle.lua` program is also a [pandoc lua filter][7].
 
 The `mdtangle.lua` filter is only interested in the `CodeBlock` section of the
 AST which represents the code sections of the input markdown document. The
