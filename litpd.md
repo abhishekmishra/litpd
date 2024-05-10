@@ -1,4 +1,3 @@
-<!-- vim: set tw=80: -->
 ---
 title:  "litpd: Literate Programming for Pandoc Markdown"
 date:   21/03/2024
@@ -7,9 +6,10 @@ author: Abhishek Mishra
 
 __Revisions__
 
-|Version  |Date      |Comments                       |
-|---------|----------|-------------------------------|
-|0.1a     |21/03/2024|Initial version                |
+|Version     |Date      |Comments                       |
+|------------|----------|-------------------------------|
+|0.1a-alpha.0|21/03/2024|Initial version                |
+|0.1a-alpha.1|10/04/2024|Second alpha release, add code fragments with code_id support.|
 
 # Introduction
 
