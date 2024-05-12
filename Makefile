@@ -1,8 +1,24 @@
 .PHONY: all clean test luaenv
 
-PANDOC_CMD = lua ./bootstrap/litpd.lua 
+PANDOC_CMD = lua ./bootstrap/litpd.lua
 PANDOC_OPTS_HTML = --to=html --standalone --toc
 PANDOC_OPTS_PDF = --to=pdf --standalone --toc
+#
+# see https://gist.github.com/sighingnow/deee806603ec9274fd47
+# for details on the following snippet to get the OS
+# (removed the flags about arch as it is not needed for now)
+OSFLAG :=
+ifeq ($(OS),Windows_NT)
+	OSFLAG = WIN32
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		OSFLAG = LINUX
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		OSFLAG = OSX
+	endif
+endif
 
 BUILD_DIR = dist
 
@@ -15,7 +31,11 @@ $(BUILD_DIR):
 # we need to move them to the build folder. This should not be necessary.
 
 $(BUILD_DIR)/%.html: %.md
+ifeq ($(OSFLAG),WIN32)
 	powershell ".luaenv/bin/activate.ps1 ; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
+else
+	bash -c "source .luaenv/bin/activate; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
+endif
 	mv litpd.lua $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
@@ -29,13 +49,21 @@ $(BUILD_DIR)/%.pdf: %.md
 	mv codeidextract.lua $(BUILD_DIR)/
 
 test:
+ifeq ($(OSFLAG),WIN32)
 	powershell ".luaenv/bin/activate.ps1 ; lua run_tests.lua"
+else
+	bash -c "source .luaenv/bin/activate ; lua run_tests.lua"
+endif
 
 luaenv:
 	@echo "Setting up luaenv... "
 	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
-	hererocks .luaenv --lua 5.4 --luarocks latest
+	#hererocks .luaenv --lua 5.4 --luarocks latest
+ifeq ($(OSFLAG),WIN32)
 	powershell ".luaenv/bin/activate.ps1 ; luarocks install busted"
+else
+	bash -c "source .luaenv/bin/activate; luarocks install busted"
+endif
 
 clean:
 	rm -f $(BUILD_DIR)/*.html
