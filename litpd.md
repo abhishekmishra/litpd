@@ -140,7 +140,7 @@ local litmd_home = script_path:match(".*/")
 
 --- Show usage
 local function show_usage()
-  print("Usage: litmd <inputfile.md> [options]")
+    print("Usage: litmd <inputfile.md> [options]")
 end
 
 -- if no arguments are provided, print the usage
@@ -152,15 +152,15 @@ end
 -- get the input file name
 local input_file = args[1]
 if input_file == nil then
-  print("No input file provided")
-  show_usage()
-  return
+    print("No input file provided")
+    show_usage()
+    return
 end
 
 -- get the rest of the arguments
 local options = {}
 for i = 2, #args do
-  table.insert(options, args[i])
+    table.insert(options, args[i])
 end
 ```
 
@@ -197,7 +197,7 @@ local cmd = PANDOC_CMD
 cmd = cmd .. input_file
 -- add the rest of the options
 for i = 1, #options do
-  cmd = cmd .. " " .. options[i]
+    cmd = cmd .. " " .. options[i]
 end
 
 -- display the command to be executed
@@ -218,8 +218,8 @@ The `result` is printed to the terminal. And then the program is done.
 -- execute the command
 local handle = io.popen(cmd)
 if handle == nil then
-  print("Error executing command")
-  return
+    print("Error executing command")
+    return
 end
 local result = handle:read("*a")
 handle:close()
@@ -257,24 +257,24 @@ into a separate temporary file assigned to each **code_id**.
 local codeidextract = {}
 
 local function get_file_name (code_block)
-  if code_block.attributes["code_id"] then
-    return code_block.attributes["code_id"] .. '.tmp'
-  end
+    if code_block.attributes["code_id"] then
+        return code_block.attributes["code_id"] .. '.tmp'
+    end
 end
 
 local function get_file (code_block)
-  local full_path = get_file_name(code_block)
-  if full_path == nil then
-    return nil, nil
-  end
-  local file = io.open(full_path, "w")
-  return full_path, file
+    local full_path = get_file_name(code_block)
+    if full_path == nil then
+        return nil, nil
+    end
+    local file = io.open(full_path, "w")
+    return full_path, file
 end
 
 local function write_code_block (code_block, file)
-  local code = code_block.text
-  file:write(code)
-  file:write("\n")
+    local code = code_block.text
+    file:write(code)
+    file:write("\n")
 end
 
 local function close_file (file)
@@ -282,24 +282,24 @@ local function close_file (file)
 end
 
 function codeidextract.CodeBlock (code_block)
-  local full_path, file = get_file(code_block)
-  if full_path == nil then
-    return
-  end
-  print("Extracting code id at " .. full_path)
-  write_code_block(code_block, file)
-  close_file(file)
+    local full_path, file = get_file(code_block)
+    if full_path == nil then
+        return
+    end
+    print("Extracting code id at " .. full_path)
+    write_code_block(code_block, file)
+    close_file(file)
 
-  -- create a label for the code block if id exists
-  local label_text = "id: " .. code_block.attributes["code_id"]
-  return {
-    pandoc.Strong(pandoc.Str(label_text)),
-    code_block
-  }
+    -- create a label for the code block if id exists
+    local label_text = "id: " .. code_block.attributes["code_id"]
+    return {
+        pandoc.Strong(pandoc.Str(label_text)),
+        code_block
+    }
 end
 
 return {
-  codeidextract
+    codeidextract
 }
 ```
 
@@ -366,7 +366,7 @@ The `file_name` is returned to the caller.
 ```lua {code_file="mdtangle.lua"}
 
 local function get_file_name (code_block)
-  return code_block.attributes["code_file"]
+    return code_block.attributes["code_file"]
 end
 ```
 
@@ -403,71 +403,72 @@ end
 --@param path string
 --@return string contents
 local function file_contents(path)
-  local file = io.open(path, "r")
-  local contents = nil
-  if file then
-    contents = file:read("*all")
-    file:close()
-  end
-  return contents
+    local file = io.open(path, "r")
+    local contents = nil
+    if file then
+        contents = file:read("*all")
+        file:close()
+    end
+    return contents
 end
 
 local function get_file (code_block)
-  local full_path = get_file_name(code_block)
-  if full_path == nil then
-    return nil, nil
-  end
-  local file = io.open(full_path, "a")
-  return full_path, file
+    local full_path = get_file_name(code_block)
+    if full_path == nil then
+        return nil, nil
+    end
+    local file = io.open(full_path, "a")
+    return full_path, file
 end
 
 local function write_code_block (code_block, file)
-  local code = code_block.text
+    local code = code_block.text
 
-  local code_id_replace = true
+    local code_id_replace = true
 
-  while code_id_replace do
-    local t = {}
-    local i = 0
-    local found_code_id = false
+    while code_id_replace do
+      local t = {}
+      local i = 0
+      local found_code_id = false
 
-    while true do
-      i, _, code_id = string.find(code, "@<(%a+)@>", i+1)
-      if i == nil then break end
-      table.insert(t, 
-        {
-          index = i,
-          code_id = code_id
-        }
-      )
-      found_code_id = true
-    end
+      while true do
+          local code_id
+          i, _, code_id = string.find(code, "@<(%a+)@>", i+1)
+          if i == nil then break end
+          table.insert(t,
+            {
+              index = i,
+              code_id = code_id
+            }
+          )
+          found_code_id = true
+      end
 
-    for _, v in ipairs(t) do
-      print('code id found at ', v.index, ' code_id = ', v.code_id)
-      local cidfile = v.code_id .. '.tmp'
-      if exists(cidfile) then
-        print('file for code_id', v.code_id, 'exists at', cidfile)
-        local contents = file_contents(cidfile)
-        -- print(contents)
-        code = code:gsub("@<" .. v.code_id .. "@>", contents)
+      for _, v in ipairs(t) do
+          print('code id found at ', v.index, ' code_id = ', v.code_id)
+          local cidfile = v.code_id .. '.tmp'
+          if exists(cidfile) then
+              print('file for code_id', v.code_id, 'exists at', cidfile)
+              local contents = file_contents(cidfile)
+              -- print(contents)
+              code = code:gsub("@<" .. v.code_id .. "@>", contents)
+          end
+      end
+
+      -- repeat the search only if there is a code_id found in current
+      -- iteration, which means there might be more after replacement
+      if not found_code_id then
+         code_id_replace = false
       end
     end
 
-    -- repeat the search only if there is a code_id found in current
-    -- iteration, which means there might be more after replacement
-    if not found_code_id then
-      code_id_replace = false
-    end
-  end
-
-  file:write(code)
-  -- print(code)
-  file:write("\n")
+    file:write(code)
+    -- print(code)
+    file:write("\n")
 end
 
 local function close_file (file)
-  file:close()
+    file:close()
 end
 ```
 
@@ -489,19 +490,19 @@ fenced code block.
 ```lua {code_file="mdtangle.lua"}
 
 function tangle.CodeBlock (code_block)
-  local full_path, file = get_file(code_block)
-  if full_path == nil then
-    return
-  end
-  print("Tangling code block at " .. full_path)
-  write_code_block(code_block, file)
-  close_file(file)
+    local full_path, file = get_file(code_block)
+    if full_path == nil then
+        return
+    end
+    print("Tangling code block at " .. full_path)
+    write_code_block(code_block, file)
+    close_file(file)
 
-  local label_text = "file: " .. full_path
-  return {
-    pandoc.Strong(pandoc.Str(label_text)),
-    code_block
-  }
+    local label_text = "file: " .. full_path
+    return {
+        pandoc.Strong(pandoc.Str(label_text)),
+        code_block
+    }
 end
 ```
 
@@ -512,7 +513,7 @@ Lastly, we export the module for use in pandoc.
 ```lua {code_file="mdtangle.lua"}
 
 return {
-  tangle
+    tangle
 }
 ```
 
