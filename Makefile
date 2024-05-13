@@ -58,7 +58,7 @@ endif
 luaenv:
 	@echo "Setting up luaenv... "
 	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
-	#hererocks .luaenv --lua 5.4 --luarocks latest
+	hererocks .luaenv --lua 5.4 --luarocks latest
 ifeq ($(OSFLAG),WIN32)
 	powershell ".luaenv/bin/activate.ps1 ; luarocks install busted"
 else
