@@ -16,7 +16,7 @@ local litmd_home = script_path:match(".*/")
 
 --- Show usage
 local function show_usage()
-  print("Usage: litmd <inputfile.md> [options]")
+    print("Usage: litmd <inputfile.md> [options]")
 end
 
 -- if no arguments are provided, print the usage
@@ -28,15 +28,15 @@ end
 -- get the input file name
 local input_file = args[1]
 if input_file == nil then
-  print("No input file provided")
-  show_usage()
-  return
+    print("No input file provided")
+    show_usage()
+    return
 end
 
 -- get the rest of the arguments
 local options = {}
 for i = 2, #args do
-  table.insert(options, args[i])
+    table.insert(options, args[i])
 end
 
 local CODEID_FILTER= litmd_home .. "codeidextract.lua"
@@ -51,7 +51,7 @@ local cmd = PANDOC_CMD
 cmd = cmd .. input_file
 -- add the rest of the options
 for i = 1, #options do
-  cmd = cmd .. " " .. options[i]
+    cmd = cmd .. " " .. options[i]
 end
 
 -- display the command to be executed
@@ -60,8 +60,8 @@ print("Executing: " .. cmd)
 -- execute the command
 local handle = io.popen(cmd)
 if handle == nil then
-  print("Error executing command")
-  return
+    print("Error executing command")
+    return
 end
 local result = handle:read("*a")
 handle:close()
