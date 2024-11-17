@@ -32,7 +32,7 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/%.html: %.md
 ifeq ($(OSFLAG),WIN32)
-	powershell ".luaenv/bin/activate.ps1 ; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
+	pwsh -Command ".luaenv/bin/activate.ps1 ; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
 else
 	bash -c "source .luaenv/bin/activate; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
 endif
@@ -50,7 +50,7 @@ $(BUILD_DIR)/%.pdf: %.md
 
 test:
 ifeq ($(OSFLAG),WIN32)
-	powershell ".luaenv/bin/activate.ps1 ; lua run_tests.lua"
+	pwsh -Command ".luaenv/bin/activate.ps1 ; lua run_tests.lua"
 else
 	bash -c "source .luaenv/bin/activate ; lua run_tests.lua"
 endif
@@ -60,7 +60,7 @@ luaenv:
 	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
 	hererocks .luaenv --lua 5.4 --luarocks latest
 ifeq ($(OSFLAG),WIN32)
-	powershell ".luaenv/bin/activate.ps1 ; luarocks install busted"
+	pwsh -Command ".luaenv/bin/activate.ps1 ; luarocks install busted"
 else
 	bash -c "source .luaenv/bin/activate; luarocks install busted"
 endif
