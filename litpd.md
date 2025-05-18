@@ -65,6 +65,8 @@ get started with lua -> [Lua: Installation](https://www.lua.org/start.html).
 See instructions for your platform at the pandoc website -> 
 [Installing Pandoc](https://pandoc.org/installing.html).
 
+**Important: Ensure pandoc is added to the path after installation**
+
 ## Installing litpd
 
 1. Create litpd directory and change to it.
@@ -89,8 +91,8 @@ In this section we will run litpd with the sample "Hello World!" program in the
 file `helloworld.md` to generate the html readable program, and the helloworld
 runnable programs in various programming languages.
 
-Open `helloworld.md` program in your favourite text editor to see what it looks
-like.
+_Open `helloworld.md` program in your favourite text editor to see what it looks
+like._
 
 ### Windows
 
@@ -101,8 +103,20 @@ On Windows we run the litpd program using the powershell script `litpd.ps1`.
 cd litpd
 
 # Run litpd with helloworld.md
-litpd.ps1 helloworld.md
+./litpd.ps1 helloworld.md
 ```
+
+### Linux/MacOS/Unix-like
+
+```bash
+# Change to the litpd directory
+cd litpd
+
+# Run litpd with helloworld.md
+./litpd.ps1 helloworld.md
+```
+
+### Result
 
 You should now see the following files:
 
@@ -111,9 +125,6 @@ You should now see the following files:
    `helloworld.md`.
 
 
-### Linux/MacOS/Unix-like
-
-TBD
 
 # The litpd Program
 
