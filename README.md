@@ -17,8 +17,7 @@ This program is written as a "literate program" in markdown. See
 **litpd** is a command-line application to be used in your own build or document
 generation process.
 
-You can download the source code by cloning this repo or downloading the source
-zip file.
+See the [Getting Started](https://abhishekmishra.github.io/litpd/#getting-started) page.
 
 ## Build
 
@@ -36,15 +35,6 @@ $ make clean all
 
 This will create a **dist** directory and generate all the build artifacts in
 this directory.
-
-## Run
-
-Run the program by executing the `litpd.lua` with the name of the input markdown
-file and any options to be passed to **pandoc**.
-
-```bash
-lua <litpd_dir>/dist/litpd.lua program.md --to=html
-```
 
 ## Example
 
@@ -67,11 +57,14 @@ print('hello')
 If we run the following litpd command...
 
 ```bash
-lua <litpd_dir>/dist/litpd.lua hello.md --to=html
+# Windows
+litpd.ps1 hello.md
+
+# Linux/MacOS
+litpd.sh hello.md
 ```
 
 Two files will be generated in the current folder:
 
-1. **hello.html** - the markdown document converted to html by pandoc.
+1. **program.html** - the markdown document converted to html by pandoc.
 2. **hello.lua** - the program with the source code in the code block.
-
