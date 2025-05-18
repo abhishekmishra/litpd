@@ -10,6 +10,7 @@ __Revisions__
 |------------|----------|-------------------------------|
 |0.1a-alpha.0|21/03/2024|Initial version                |
 |0.1a-alpha.1|10/04/2024|Second alpha release, add code fragments with code_id support.|
+|0.2.0-beta.0|18/05/2025|First beta release, support for powershell and bash scripts and installation procedure documented.|
 
 # Introduction
 

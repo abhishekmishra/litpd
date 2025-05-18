@@ -1,6 +1,15 @@
 # CHANGELOG
 This file documents major changes in every release of the project. The project follows [Semantic Versioning](https://semver.org/). There is a section for each release - which lists major changes made in the release.
 
+**0.2.0-beta.0** 2025-05-18 Abhishek Mishra  <abhishekmishra3@gmail.com>
+
+- This is the first beta release of litpd. It is stable and I've been using it for more than a year.
+- The current release adds support for linux and macos and contains
+  several minor bug-fixes.
+- The program has been updated to include a "Getting Started" section to help with installation and running the program.
+- A sample `helloworld.md` program is included with the release.
+- A release zip will be included with this release.
+
 **0.1.0-alpha.1**  2024-05-10 Abhishek Mishra  <abhishekmishra3@gmail.com>
 
 - This is the second alpha release of **litpd**.
