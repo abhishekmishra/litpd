@@ -47,6 +47,7 @@ endif
 	mv codeidextract.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
 	cp litpd.ps1 $(BUILD_DIR)/
+	cp litpd.sh $(BUILD_DIR)/
 	cp helloworld.md $(BUILD_DIR)/
 
 $(BUILD_DIR)/%.pdf: %.md
