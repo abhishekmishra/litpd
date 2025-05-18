@@ -43,6 +43,39 @@ programming language.
 [2]: https://www-cs-faculty.stanford.edu/~knuth/lp.html
 [7]: https://github.com/abhishekmishra/litpd
 
+# Getting Started
+
+## Pre-requisites
+
+1. Lua
+2. Pandoc
+
+### Installing Lua
+
+See the getting started page on the lua website for instructions on how to
+get started with lua -> [Lua: Installation](https://www.lua.org/start.html).
+
+**Important: Ensure lua is added to the path after installation**
+
+### Installing Pandoc
+
+See instructions for your platform at the pandoc website -> 
+[Installing Pandoc](https://pandoc.org/installing.html).
+
+### Installing litpd
+
+1. Download the latest release zip.
+2. Unzip the release zip.
+3. Change to the litpd directory.
+4. Run the litpd shell program for your platform to check if the pre-requisites
+   are available.
+
+#### Windows
+
+#### Linux
+
+#### MacOS
+
 # The litpd Program
 
 The litpd program is written in the [Lua programming language][4]. The goal of
