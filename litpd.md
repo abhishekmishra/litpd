@@ -67,23 +67,28 @@ See instructions for your platform at the pandoc website ->
 
 ## Installing litpd
 
-1. Download the latest release zip.
-2. Unzip the release zip.
-3. Change to the litpd directory.
-4. Run the litpd shell program for your platform to check if the pre-requisites
-   are available.
+1. Create litpd directory and change to it.
+2. Download the latest release zip.
+3. Unzip the release zip.
 
-#### Windows
+### Windows
 
 ```powershell
 New-Item -ItemType Directory -Force -Name "litpd"; Set-Location "litpd"; Invoke-WebRequest -Uri "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.zip" -OutFile "litpd.zip"; Expand-Archive -Path "litpd.zip" -DestinationPath "."
 ```
 
-#### Linux/MacOS/Unix-like
+### Linux/MacOS/Unix-like
 
 ```bash
 mkdir -p litpd && cd litpd && curl -L -o litpd.zip "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.zip" && unzip litpd.zip
 ```
+
+## Running litpd
+
+### Windows
+
+### Linux/MacOS/Unix-like
+
 
 # The litpd Program
 
