@@ -83,7 +83,7 @@ New-Item -ItemType Directory -Force -Name "litpd"; Set-Location "litpd"; Invoke-
 ### Linux/MacOS/Unix-like
 
 ```bash
-mkdir -p litpd && cd litpd && curl -L -o litpd.zip "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.zip" && unzip litpd.zip
+mkdir -p litpd && cd litpd && curl -L -o litpd.tar.gz "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.tar.gz" && tar -xzf litpd.tar.gz
 ```
 
 ## Running litpd
