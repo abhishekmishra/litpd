@@ -85,10 +85,35 @@ mkdir -p litpd && cd litpd && curl -L -o litpd.zip "https://github.com/abhishekm
 
 ## Running litpd
 
+In this section we will run litpd with the sample "Hello World!" program in the
+file `helloworld.md` to generate the html readable program, and the helloworld
+runnable programs in various programming languages.
+
+Open `helloworld.md` program in your favourite text editor to see what it looks
+like.
+
 ### Windows
+
+On Windows we run the litpd program using the powershell script `litpd.ps1`.
+
+```powershell
+# Change to the litpd directory
+cd litpd
+
+# Run litpd with helloworld.md
+litpd.ps1 helloworld.md
+```
+
+You should now see the following files:
+
+1. `program.html`: This is the readable/printable version of the program.
+2. `helloworld.lua,helloworld.py,etc.`: The runnable programs generated from
+   `helloworld.md`.
+
 
 ### Linux/MacOS/Unix-like
 
+TBD
 
 # The litpd Program
 

@@ -45,5 +45,22 @@ Catch {
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $luaPath = "lua"
 $inputFile = $args[0]
-$options = $args[1..($args.Length - 1)] -join " "
+$defaultOptions = "--output=program.html"
+
+# Check if there are args after the input file
+if ($args.Length -gt 1) {
+    $options = $args[1..($args.Length - 1)] -join " "
+} else {
+    $options = ""
+}
+
+# Check if the options are empty, if so, set to default
+if (-not $options) {
+    $options = $defaultOptions
+}
+
+# Print the options (for debugging purposes)
+# Write-Host "Input File: $inputFile"
+# Write-Host "Pandoc Options: $options"
+
 & $luaPath "$scriptPath/litpd.lua" $inputFile $options
