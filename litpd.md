@@ -45,24 +45,27 @@ programming language.
 
 # Getting Started
 
-## Pre-requisites
+To quickly get started with using the litpd program, follow the instructions to 
+ensure you have the pre-requisites and then install and test the litpd release.
 
-1. Lua
-2. Pandoc
+There are two pre-requisites
 
-### Installing Lua
+1. Lua (install the latest 5.4 version)
+2. Pandoc (install the latest available for your platform)
+
+## Installing Lua
 
 See the getting started page on the lua website for instructions on how to
 get started with lua -> [Lua: Installation](https://www.lua.org/start.html).
 
 **Important: Ensure lua is added to the path after installation**
 
-### Installing Pandoc
+## Installing Pandoc
 
 See instructions for your platform at the pandoc website -> 
 [Installing Pandoc](https://pandoc.org/installing.html).
 
-### Installing litpd
+## Installing litpd
 
 1. Download the latest release zip.
 2. Unzip the release zip.
@@ -72,9 +75,15 @@ See instructions for your platform at the pandoc website ->
 
 #### Windows
 
-#### Linux
+```powershell
+New-Item -ItemType Directory -Force -Name "litpd"; Set-Location "litpd"; Invoke-WebRequest -Uri "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.zip" -OutFile "litpd.zip"; Expand-Archive -Path "litpd.zip" -DestinationPath "."
+```
 
-#### MacOS
+#### Linux/MacOS/Unix-like
+
+```bash
+mkdir -p litpd && cd litpd && curl -L -o litpd.zip "https://github.com/abhishekmishra/litpd/releases/latest/download/litpd.zip" && unzip litpd.zip
+```
 
 # The litpd Program
 

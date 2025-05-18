@@ -81,7 +81,7 @@ dist: all
 # and call it litpd-<version>.zip
 # where <version> is the value of VERSION
 	cd $(BUILD_DIR) && \
-	zip -r ../$(DIST_DIR)/litpd-$(VERSION).zip * && \
+	zip -r ../$(DIST_DIR)/litpd.zip * && \
 	cd ..
 
 clean:
