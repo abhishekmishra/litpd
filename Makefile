@@ -1,4 +1,4 @@
-.PHONY: all clean test luaenv docs
+.PHONY: all clean test luaenv docs release
 
 PANDOC_CMD = lua ./bootstrap/litpd.lua
 PANDOC_OPTS_HTML = --to=html --standalone --toc
@@ -20,7 +20,9 @@ else
 	endif
 endif
 
-BUILD_DIR = dist
+BUILD_DIR = build
+
+DIST_DIR = dist
 
 DOCS_DIR = docs
 
@@ -71,6 +73,12 @@ docs:
 # copy litpd.html to docs folder
 	mkdir -p $(DOCS_DIR)
 	cp $(BUILD_DIR)/litpd.html $(DOCS_DIR)/index.html
+
+dist: all
+# zip the contents of the dist directory
+# and call it litpd-<version>.zip
+# where <version> is the value of VERSION
+	zip -r $(DIST_DIR)/litpd-$(VERSION).zip $(BUILD_DIR)/*
 
 clean:
 	rm -f $(BUILD_DIR)/*.html
