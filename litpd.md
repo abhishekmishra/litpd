@@ -43,6 +43,7 @@ programming language.
 
 The litpd program is written in the [Lua programming language][4]. The goal of
 the program is two-fold:
+
 1. **Readable Program**: Generate a publishable/printable Program Description in
    HTML or PDF formats.
 2. **Runnable Program**: Separate out and/or merge code blocks into individual

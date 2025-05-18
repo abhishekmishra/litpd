@@ -340,11 +340,14 @@ language.</p>
 <h1 id="the-litpd-program">The litpd Program</h1>
 <p>The litpd program is written in the <a
 href="https://lua.org/about.html">Lua programming language</a>. The goal
-of the program is two-fold: 1. <strong>Readable Program</strong>:
-Generate a publishable/printable Program Description in HTML or PDF
-formats. 2. <strong>Runnable Program</strong>: Separate out and/or merge
-code blocks into individual program files so that they can be used as a
-normal program in the target language.</p>
+of the program is two-fold:</p>
+<ol type="1">
+<li><strong>Readable Program</strong>: Generate a publishable/printable
+Program Description in HTML or PDF formats.</li>
+<li><strong>Runnable Program</strong>: Separate out and/or merge code
+blocks into individual program files so that they can be used as a
+normal program in the target language.</li>
+</ol>
 <p>The program uses <strong>pandoc</strong> to perform the generation of
 the final readable document with minor adjustments. Therefore this part
 of the program simply delegates to pandoc.</p>
