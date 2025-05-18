@@ -1,4 +1,4 @@
-.PHONY: all clean test luaenv
+.PHONY: all clean test luaenv docs
 
 PANDOC_CMD = lua ./bootstrap/litpd.lua
 PANDOC_OPTS_HTML = --to=html --standalone --toc
@@ -21,6 +21,8 @@ else
 endif
 
 BUILD_DIR = dist
+
+DOCS_DIR = docs
 
 all: $(BUILD_DIR) $(BUILD_DIR)/litpd.html
 
@@ -64,6 +66,11 @@ ifeq ($(OSFLAG),WIN32)
 else
 	bash -c "source .luaenv/bin/activate; luarocks install busted"
 endif
+
+docs:
+# copy litpd.html to docs folder
+	mkdir -p $(DOCS_DIR)
+	cp $(BUILD_DIR)/litpd.html $(DOCS_DIR)/index.html
 
 clean:
 	rm -f $(BUILD_DIR)/*.html
