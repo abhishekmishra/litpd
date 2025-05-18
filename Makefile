@@ -79,12 +79,19 @@ docs:
 	cp $(BUILD_DIR)/litpd.html $(DOCS_DIR)/index.html
 
 dist: all
+ifeq ($(OSFLAG),WIN32)
 # zip the contents of the dist directory
 # and call it litpd-<version>.zip
 # where <version> is the value of VERSION
 	cd $(BUILD_DIR) && \
 	zip -r ../$(DIST_DIR)/litpd.zip * && \
 	cd ..
+else
+# also create a tarball with the crlf replaced by lf
+	cd $(BUILD_DIR) && \
+	tar -czf ../$(DIST_DIR)/litpd.tar.gz * && \
+	cd ..
+endif
 
 clean:
 	rm -f $(BUILD_DIR)/*
