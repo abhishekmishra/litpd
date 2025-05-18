@@ -13,6 +13,10 @@ __Revisions__
 
 # Introduction
 
+> 1. Write a program's code and design in markdown. 
+> 2. Use litpd to generate the readable and runnable avatars of your program.
+> 3. Profit?!!
+
 This document describes a simple [literate programming][1] tool. It is
 developed for use in my own programming projects. I use markdown for most
 documentation, and I use `lua` for most of my programming needs these days.
@@ -22,7 +26,7 @@ a lua filter to process the code blocks in the literate program document to
 generate output programs in their own files.
 
 This tool is itself written as a literate program and can be found at
-[litpd][7]
+[github/litpd][7]
 
 ## What is Literate Programming?
 
