@@ -62,14 +62,32 @@ The approach is also described in the High-level design diagram below.
 
 <img src="HLDDiagram.png" alt="High Level Design of litpd" width="100%" />
 
-Therefore, the **litpd** application is composed of two programs.
+## Components of litpd
 
-1. **litpd.lua**: This program is the main cli tool used to generate the
+As you have seen in the design diagram above, the litpd process uses pandoc
+to generate both the readable and runnable avatars of the program. The user of
+litpd interacts with a shell program (for their o/s, powershell on windows
+and bash on unix-like). This shell program ensures _lua_ and _pandoc_ are
+available. It then starts up _litpd.lua_ which orchestrates _pando_ and injects
+it with *filter* programs _codeidextract.lua_ and _mdtangle.lua_ to get the
+runnable avatar of the program. Since the input program in already in pandoc
+markdown format, pandoc can be used trivially to get the readable avatar of the
+literate program.
+
+Therefore, the **litpd** application is composed of the following components:
+
+1. **litpd.ps1/litpd.sh**: This is the main entry-point of the program. The user
+   interacts with this program to get the readable and runnable programs from
+   the markdown document they have authored.
+2. **litpd.lua**: This program is the main cli tool used to generate the
    publishable document and the runnable program from the input literate
    program written in the [pandoc markdown format][5].
-2. **mdtangle.lua**: This program is a [pandoc lua filter][6]. The goal of this
+3. **mdtangle.lua**: This program is a [pandoc lua filter][6]. The goal of this
    program is to run during the filter phase of document generation and extract
    the source code of the literate program into proper output program files.
+4. **codeidextract.lua**: This program is also a [pandoc lua filter][6]. The
+   goal of this program is to use the file id's or code id's of the program
+   fragments and load the appropriate code-blocks for each.
 
 [4]: https://lua.org/about.html
 [5]: https://pandoc.org/MANUAL.html#pandocs-markdown
@@ -529,10 +547,6 @@ I will make changes.
   sure there are several bugs lurking in the corners. They will be fixed, and
   the document updated accordingly.
 * **New Features**: I see a few things which might be useful in the future.
-  * **Out-of-order Code Blocks**: Currently the program files are generated with
-    content in the order it appears in fenced code blocks in the input document.
-    This is restrictive, and sometimes one might want to introduce program
-    sections in a different sequence. This is a possible future enhancement.
   * **Ignore Code Blocks**: Some code blocks might just be examples or asides,
     and need not end up in the final program files. There should be a mechanism
     to ignore such code blocks.

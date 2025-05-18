@@ -251,6 +251,8 @@ Programming?</a></li>
 <li><a href="#the-litpd-program" id="toc-the-litpd-program">The litpd
 Program</a>
 <ul>
+<li><a href="#components-of-litpd"
+id="toc-components-of-litpd">Components of litpd</a></li>
 <li><a href="#cli-program---litpd.lua"
 id="toc-cli-program---litpd.lua">CLI Program - litpd.lua</a>
 <ul>
@@ -358,9 +360,24 @@ file(s).</p>
 <p>The approach is also described in the High-level design diagram
 below.</p>
 <p><img src="HLDDiagram.png" alt="High Level Design of litpd" width="100%" /></p>
-<p>Therefore, the <strong>litpd</strong> application is composed of two
-programs.</p>
+<h2 id="components-of-litpd">Components of litpd</h2>
+<p>As you have seen in the design diagram above, the litpd process uses
+pandoc to generate both the readable and runnable avatars of the
+program. The user of litpd interacts with a shell program (for their
+o/s, powershell on windows and bash on unix-like). This shell program
+ensures <em>lua</em> and <em>pandoc</em> are available. It then starts
+up <em>litpd.lua</em> which orchestrates <em>pando</em> and injects it
+with <em>filter</em> programs <em>codeidextract.lua</em> and
+<em>mdtangle.lua</em> to get the runnable avatar of the program. Since
+the input program in already in pandoc markdown format, pandoc can be
+used trivially to get the readable avatar of the literate program.</p>
+<p>Therefore, the <strong>litpd</strong> application is composed of the
+following components:</p>
 <ol type="1">
+<li><strong>litpd.ps1/litpd.sh</strong>: This is the main entry-point of
+the program. The user interacts with this program to get the readable
+and runnable programs from the markdown document they have
+authored.</li>
 <li><strong>litpd.lua</strong>: This program is the main cli tool used
 to generate the publishable document and the runnable program from the
 input literate program written in the <a
@@ -371,6 +388,10 @@ href="https://pandoc.org/lua-filters.html">pandoc lua filter</a>. The
 goal of this program is to run during the filter phase of document
 generation and extract the source code of the literate program into
 proper output program files.</li>
+<li><strong>codeidextract.lua</strong>: This program is also a <a
+href="https://pandoc.org/lua-filters.html">pandoc lua filter</a>. The
+goal of this program is to use the file id’s or code id’s of the program
+fragments and load the appropriate code-blocks for each.</li>
 </ol>
 <h2 id="cli-program---litpd.lua">CLI Program - litpd.lua</h2>
 <p>The <code>litpd.lua</code> program provides a command line interface
@@ -820,11 +841,6 @@ corners. They will be fixed, and the document updated accordingly.</li>
 <li><strong>New Features</strong>: I see a few things which might be
 useful in the future.
 <ul>
-<li><strong>Out-of-order Code Blocks</strong>: Currently the program
-files are generated with content in the order it appears in fenced code
-blocks in the input document. This is restrictive, and sometimes one
-might want to introduce program sections in a different sequence. This
-is a possible future enhancement.</li>
 <li><strong>Ignore Code Blocks</strong>: Some code blocks might just be
 examples or asides, and need not end up in the final program files.
 There should be a mechanism to ignore such code blocks.</li>
