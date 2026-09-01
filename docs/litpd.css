@@ -8,9 +8,9 @@
   --border: #d8ddd7;
   --code-bg: #17221f;
   --code-ink: #e9f0ec;
-  --content-width: 50rem;
-  --toc-width: 17rem;
-  --gutter: 3.5rem;
+  --content-width: 48rem;
+  --toc-width: 15rem;
+  --gutter: 2.5rem;
 }
 
 html {
@@ -20,9 +20,9 @@ html {
 
 body {
   box-sizing: border-box;
-  max-width: calc(var(--toc-width) + var(--gutter) + var(--content-width) + 4rem);
+  max-width: calc(var(--toc-width) + var(--gutter) + var(--content-width) + 3rem);
   margin: 0 auto;
-  padding: 4rem 2rem 8rem;
+  padding: 2.5rem 1.5rem 5rem;
   color: var(--ink);
   background: transparent;
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -41,8 +41,8 @@ body > :not(nav#TOC) {
 }
 
 header {
-  margin-bottom: 3.5rem;
-  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--border);
   text-align: left;
 }
@@ -64,22 +64,18 @@ header p {
 
 nav#TOC {
   position: fixed;
-  top: 2rem;
+  top: 2.5rem;
   width: var(--toc-width);
-  max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - 5rem);
   box-sizing: border-box;
-  padding: 1.1rem 1.1rem 1.25rem;
+  padding: 0.4rem 1.25rem 0.5rem 0;
   overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: 0.8rem;
-  background: var(--surface);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 1rem 3rem rgb(32 37 34 / 7%);
+  border-right: 1px solid var(--border);
 }
 
 nav#TOC::before {
   display: block;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
   color: var(--muted);
   content: "On this page";
   font-size: 0.72rem;
@@ -107,8 +103,7 @@ nav#TOC li {
 
 nav#TOC a {
   display: block;
-  padding: 0.18rem 0.25rem;
-  border-radius: 0.3rem;
+  padding: 0.14rem 0;
   color: var(--muted);
   font-size: 0.82rem;
   text-decoration: none;
@@ -117,7 +112,8 @@ nav#TOC a {
 nav#TOC a:hover,
 nav#TOC a:focus-visible {
   color: var(--accent);
-  background: var(--accent-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 h1,
@@ -132,20 +128,19 @@ h4 {
 }
 
 h1 {
-  margin-top: 3.5rem;
+  margin-top: 2.5rem;
   font-size: clamp(2.1rem, 4vw, 3.1rem);
   letter-spacing: -0.035em;
 }
 
 h2 {
-  margin-top: 2.8rem;
-  padding-top: 0.25rem;
+  margin-top: 2.25rem;
   font-size: 1.75rem;
   letter-spacing: -0.02em;
 }
 
 h3 {
-  margin-top: 2rem;
+  margin-top: 1.6rem;
   font-size: 1.28rem;
 }
 
@@ -153,7 +148,7 @@ p,
 ul,
 ol {
   margin-top: 0;
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.95rem;
 }
 
 a {
@@ -167,13 +162,12 @@ a:visited {
 }
 
 blockquote {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-  padding: 1.1rem 1.3rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+  padding: 0.75rem 1rem;
   border-left: 0.25rem solid var(--accent);
-  border-radius: 0 0.6rem 0.6rem 0;
   color: #34433d;
-  background: var(--accent-soft);
+  background: #edf3ef;
 }
 
 blockquote > :last-child {
@@ -181,8 +175,7 @@ blockquote > :last-child {
 }
 
 code {
-  padding: 0.14em 0.32em;
-  border-radius: 0.28rem;
+  padding: 0.08em 0.24em;
   color: #075848;
   background: #e5eee9;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -192,15 +185,13 @@ code {
 
 pre,
 div.sourceCode {
-  margin: 1.4rem 0;
+  margin: 1.2rem 0;
   border: 1px solid #2c3a35;
-  border-radius: 0.7rem;
   background: var(--code-bg);
-  box-shadow: 0 0.6rem 1.6rem rgb(32 37 34 / 9%);
 }
 
 pre {
-  padding: 1rem 1.15rem;
+  padding: 0.9rem 1rem;
   overflow-x: auto;
 }
 
@@ -287,13 +278,12 @@ code span.er {
 table {
   display: table;
   width: 100%;
-  margin: 1.5rem 0 2rem;
+  margin: 1.25rem 0 1.5rem;
   overflow: hidden;
   border: 1px solid var(--border);
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 0.65rem;
-  background: var(--surface);
+  background: transparent;
   font-size: 0.92rem;
 }
 
@@ -307,7 +297,7 @@ tbody {
 
 th,
 td {
-  padding: 0.7rem 0.8rem;
+  padding: 0.6rem 0.7rem;
   border: 0;
   border-bottom: 1px solid var(--border);
   text-align: left;
@@ -322,9 +312,8 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 1.8rem auto;
+  margin: 1.4rem auto;
   border: 1px solid var(--border);
-  border-radius: 0.7rem;
   background: white;
 }
 
@@ -335,7 +324,7 @@ strong {
 @media (max-width: 960px) {
   body {
     max-width: 50rem;
-    padding: 2rem 1.25rem 5rem;
+    padding: 1.75rem 1.25rem 4rem;
   }
 
   body > :not(nav#TOC) {
@@ -346,7 +335,10 @@ strong {
     position: static;
     width: 100%;
     max-height: none;
-    margin: 0 0 3rem;
+    margin: 0 0 2rem;
+    padding: 0 0 1rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
     columns: 2 14rem;
   }
 

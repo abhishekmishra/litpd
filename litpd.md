@@ -85,6 +85,18 @@ pipx install litpd
 You can then run `litpd` from any directory. Pandoc must still be installed and
 available on your `PATH`.
 
+### Installing with pip
+
+`pipx` is recommended for command-line applications, but it is not required.
+To install litpd into your active Python environment, run:
+
+```bash
+python3 -m pip install litpd
+```
+
+The `litpd` command must be on your `PATH` after installation. Pandoc must also
+be installed and available on your `PATH`.
+
 ### Archive distribution
 
 1. Create litpd directory and change to it.
