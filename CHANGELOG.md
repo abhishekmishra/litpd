@@ -2,7 +2,7 @@
 
 This file documents major changes in every release of the project. The project follows [Semantic Versioning](https://semver.org/). There is a section for each release - which lists major changes made in the release.
 
-**0.3.0-beta.0**
+**0.3.0-beta.0** 2026-09-01 Abhishek Mishra <abhishekmishra3@gmail.com>
 
 - Replaced the Lua CLI and platform-specific PowerShell and Bash launchers with
   a single Python 3 CLI.
