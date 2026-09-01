@@ -462,15 +462,7 @@ This project, including its documentation, is licensed under the
 
 # Future Plans
 
-This is a fairly new program. As I use it in my daily programming workflow,
-I will make changes.
+Potential improvements include:
 
-- **Version History**: All changes will be noted in the version history section
-  at the top of the document.
-- **Bug Fixes**: I've only uesd this to write a few programs, and therefore I'm
-  sure there are several bugs lurking in the corners. They will be fixed, and
-  the document updated accordingly.
-- **New Features**: I see a few things which might be useful in the future.
-  - **Ignore Code Blocks**: Some code blocks might just be examples or asides,
-    and need not end up in the final program files. There should be a mechanism
-    to ignore such code blocks.
+- **Ignore Code Blocks**: Allow example or aside code blocks to appear in the
+  documentation without being written to generated program files.
