@@ -1,7 +1,7 @@
 ---
 title:  "litpd: Literate Programming for Pandoc Markdown"
 date:   21/03/2024
-author: Abhishek Mishra <[https://neolateral.in](https://neolateral.in)>
+author: "[Abhishek Mishra](https://neolateral.in)"
 ---
 
 __Revisions__

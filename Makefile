@@ -3,7 +3,7 @@
 VERSION = 0.3.0-beta.0
 
 PANDOC_CMD = pandoc --lua-filter=./bootstrap/codeidextract.lua --lua-filter=./bootstrap/mdtangle.lua --from=markdown
-PANDOC_OPTS_HTML = --to=html --standalone --toc
+PANDOC_OPTS_HTML = --to=html --standalone --toc --css=litpd.css
 PANDOC_OPTS_PDF = --to=pdf --standalone --toc
 #
 # see https://gist.github.com/sighingnow/deee806603ec9274fd47
@@ -30,19 +30,20 @@ DIST_DIR = dist
 
 DOCS_DIR = docs
 
-RELEASE_FILES = litpd.py codeidextract.lua mdtangle.lua litpd.html HLDDiagram.png helloworld.md
+RELEASE_FILES = litpd.py codeidextract.lua mdtangle.lua litpd.html litpd.css HLDDiagram.png helloworld.md
 
 all: $(BUILD_DIR)/litpd.html
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/%.html: %.md bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
+$(BUILD_DIR)/%.html: %.md litpd.css bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
 	mv litpd.py $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
+	cp litpd.css $(BUILD_DIR)/
 	cp helloworld.md $(BUILD_DIR)/
 
 $(BUILD_DIR)/%.pdf: %.md bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
@@ -58,6 +59,7 @@ docs: all
 # copy litpd.html to docs folder
 	mkdir -p $(DOCS_DIR)
 	cp $(BUILD_DIR)/litpd.html $(DOCS_DIR)/index.html
+	cp $(BUILD_DIR)/litpd.css $(DOCS_DIR)/litpd.css
 
 dist: all
 	mkdir -p $(DIST_DIR)
