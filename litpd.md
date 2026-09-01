@@ -1,22 +1,22 @@
 ---
-title:  "litpd: Literate Programming for Pandoc Markdown"
-date:   21/03/2024
+title: "litpd: Literate Programming for Pandoc Markdown"
+date: 21/03/2024
 author: "[Abhishek Mishra](https://neolateral.in)"
 ---
 
-__Revisions__
+**Revisions**
 
-|Version     |Date      |Comments                       |
-|------------|----------|-------------------------------|
-|0.1a-alpha.0|21/03/2024|Initial version                |
-|0.1a-alpha.1|10/04/2024|Second alpha release, add code fragments with code_id support.|
-|0.2.0-beta.0|18/05/2025|First beta release, support for powershell and bash scripts and installation procedure documented.|
-|0.3.0-beta.0|01/09/2026|Replace the Lua, PowerShell, and Bash launchers with a cross-platform Python CLI.|
-|0.3.1-beta.0|01/09/2026|Replace temporary code-fragment files with an in-memory filter and organize the filter as code_id chunks.|
+| Version      | Date       | Comments                                                                                                  |
+| ------------ | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 0.1a-alpha.0 | 21/03/2024 | Initial version                                                                                           |
+| 0.1a-alpha.1 | 10/04/2024 | Second alpha release, add code fragments with code_id support.                                            |
+| 0.2.0-beta.0 | 18/05/2025 | First beta release, support for powershell and bash scripts and installation procedure documented.        |
+| 0.3.0-beta.0 | 01/09/2026 | Replace the Lua, PowerShell, and Bash launchers with a cross-platform Python CLI.                         |
+| 0.3.1-beta.0 | 01/09/2026 | Replace temporary code-fragment files with an in-memory filter and organize the filter as code_id chunks. |
 
 # Introduction
 
-> 1. Write a program's code and design in markdown. 
+> 1. Write a program's code and design in markdown.
 > 2. Use litpd to generate the readable and runnable avatars of your program.
 > 3. Profit?!!
 
@@ -48,7 +48,7 @@ programming language.
 
 # Getting Started
 
-To quickly get started with using the litpd program, follow the instructions to 
+To quickly get started with using the litpd program, follow the instructions to
 ensure you have the pre-requisites and then install and test the litpd release.
 
 There are two pre-requisites:
@@ -68,7 +68,7 @@ instructions -> [Python: Downloads](https://www.python.org/downloads/).
 
 ## Installing Pandoc
 
-See instructions for your platform at the pandoc website -> 
+See instructions for your platform at the pandoc website ->
 [Installing Pandoc](https://pandoc.org/installing.html).
 
 **Important: Ensure pandoc is added to the path after installation**
@@ -129,8 +129,6 @@ You should now see the following files:
 1. `program.html`: This is the readable/printable version of the program.
 2. `helloworld.lua,helloworld.py,etc.`: The runnable programs generated from
    `helloworld.md`.
-
-
 
 # The litpd Program
 
@@ -261,10 +259,10 @@ def main(args: list[str]) -> int:
 In the next section of the program we now construct the pandoc command to run
 such that both the output document, and output code are generated correctly.
 
-* The `tangle_filter` variable stores the path to the Lua Pandoc filter. It
+- The `tangle_filter` variable stores the path to the Lua Pandoc filter. It
   collects `code_id` fragments in memory, expands them, and writes code blocks
   marked with `code_file` to their target files.
-* The command is constructed as a list of arguments. This preserves spaces and
+- The command is constructed as a list of arguments. This preserves spaces and
   other characters in filenames and prevents a shell from interpreting user
   input.
 
@@ -457,17 +455,22 @@ end
 @<filter_entry@>
 ```
 
+# License
+
+This project, including its documentation, is licensed under the
+[MIT License](LICENSE).
+
 # Future Plans
 
 This is a fairly new program. As I use it in my daily programming workflow,
 I will make changes.
 
-* **Version History**: All changes will be noted in the version history section
+- **Version History**: All changes will be noted in the version history section
   at the top of the document.
-* **Bug Fixes**: I've only uesd this to write a few programs, and therefore I'm
+- **Bug Fixes**: I've only uesd this to write a few programs, and therefore I'm
   sure there are several bugs lurking in the corners. They will be fixed, and
   the document updated accordingly.
-* **New Features**: I see a few things which might be useful in the future.
-  * **Ignore Code Blocks**: Some code blocks might just be examples or asides,
+- **New Features**: I see a few things which might be useful in the future.
+  - **Ignore Code Blocks**: Some code blocks might just be examples or asides,
     and need not end up in the final program files. There should be a mechanism
     to ignore such code blocks.
