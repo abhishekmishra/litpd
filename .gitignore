@@ -49,3 +49,6 @@ dist/
 out/
 .luaenv/
 *.tmp
+
+# macos temp files
+.DS_Store
