@@ -11,6 +11,7 @@ __Revisions__
 |0.1a-alpha.0|21/03/2024|Initial version                |
 |0.1a-alpha.1|10/04/2024|Second alpha release, add code fragments with code_id support.|
 |0.2.0-beta.0|18/05/2025|First beta release, support for powershell and bash scripts and installation procedure documented.|
+|0.3.0-beta.0|01/09/2026|Replace the Lua, PowerShell, and Bash launchers with a cross-platform Python CLI.|
 
 # Introduction
 
@@ -49,17 +50,20 @@ programming language.
 To quickly get started with using the litpd program, follow the instructions to 
 ensure you have the pre-requisites and then install and test the litpd release.
 
-There are two pre-requisites
+There are two pre-requisites:
 
-1. Lua (install the latest 5.4 version)
+1. Python 3.8 or newer
 2. Pandoc (install the latest available for your platform)
 
-## Installing Lua
+The Lua filters are executed by Pandoc. A separate Lua installation is not
+required.
 
-See the getting started page on the lua website for instructions on how to
-get started with lua -> [Lua: Installation](https://www.lua.org/start.html).
+## Installing Python
 
-**Important: Ensure lua is added to the path after installation**
+See the downloads page on the Python website for installation packages and
+instructions -> [Python: Downloads](https://www.python.org/downloads/).
+
+**Important: Ensure Python is added to the path after installation.**
 
 ## Installing Pandoc
 
@@ -97,14 +101,14 @@ like._
 
 ### Windows
 
-On Windows we run the litpd program using the powershell script `litpd.ps1`.
+On Windows, run the Python program with the Python launcher:
 
 ```powershell
 # Change to the litpd directory
 cd litpd
 
 # Run litpd with helloworld.md
-./litpd.ps1 helloworld.md
+py litpd.py helloworld.md
 ```
 
 ### Linux/MacOS/Unix-like
@@ -114,7 +118,7 @@ cd litpd
 cd litpd
 
 # Run litpd with helloworld.md
-./litpd.ps1 helloworld.md
+python3 litpd.py helloworld.md
 ```
 
 ### Result
@@ -129,8 +133,9 @@ You should now see the following files:
 
 # The litpd Program
 
-The litpd program is written in the [Lua programming language][4]. The goal of
-the program is two-fold:
+The litpd command-line program is written in Python. Its Pandoc filters are
+written in the [Lua programming language][4], the language supported by
+Pandoc's built-in scripting engine. The goal of the program is two-fold:
 
 1. **Readable Program**: Generate a publishable/printable Program Description in
    HTML or PDF formats.
@@ -154,26 +159,22 @@ The approach is also described in the High-level design diagram below.
 
 As you have seen in the design diagram above, the litpd process uses pandoc
 to generate both the readable and runnable avatars of the program. The user of
-litpd interacts with a shell program (for their o/s, powershell on windows
-and bash on unix-like). This shell program ensures _lua_ and _pandoc_ are
-available. It then starts up _litpd.lua_ which orchestrates _pando_ and injects
-it with *filter* programs _codeidextract.lua_ and _mdtangle.lua_ to get the
-runnable avatar of the program. Since the input program in already in pandoc
+litpd interacts directly with the cross-platform Python program _litpd.py_.
+This program ensures Pandoc is available, then starts Pandoc with the filter
+programs _codeidextract.lua_ and _mdtangle.lua_ to get the runnable avatar of
+the program. Since the input program is already in Pandoc
 markdown format, pandoc can be used trivially to get the readable avatar of the
 literate program.
 
 Therefore, the **litpd** application is composed of the following components:
 
-1. **litpd.ps1/litpd.sh**: This is the main entry-point of the program. The user
-   interacts with this program to get the readable and runnable programs from
-   the markdown document they have authored.
-2. **litpd.lua**: This program is the main cli tool used to generate the
+1. **litpd.py**: This program is the main CLI tool used to generate the
    publishable document and the runnable program from the input literate
    program written in the [pandoc markdown format][5].
-3. **mdtangle.lua**: This program is a [pandoc lua filter][6]. The goal of this
+2. **mdtangle.lua**: This program is a [pandoc lua filter][6]. The goal of this
    program is to run during the filter phase of document generation and extract
    the source code of the literate program into proper output program files.
-4. **codeidextract.lua**: This program is also a [pandoc lua filter][6]. The
+3. **codeidextract.lua**: This program is also a [pandoc lua filter][6]. The
    goal of this program is to use the file id's or code id's of the program
    fragments and load the appropriate code-blocks for each.
 
@@ -181,9 +182,9 @@ Therefore, the **litpd** application is composed of the following components:
 [5]: https://pandoc.org/MANUAL.html#pandocs-markdown
 [6]: https://pandoc.org/lua-filters.html
 
-## CLI Program - litpd.lua
+## CLI Program - litpd.py
 
-The `litpd.lua` program provides a command line interface to the literate
+The `litpd.py` program provides a command line interface to the literate
 programming tool. It allows us to run the pandoc conversion of the literate
 program document into the publishable document and the runnable program using
 the `mdtangle.lua` filter as well as compile the output into proper files at
@@ -192,7 +193,7 @@ the proper locations.
 The program has the following parts:
 
 1. **Program documentation**
-2. **Extract program arguments & check required arguments**
+2. **Extract program arguments and check prerequisites**
 3. **Construct the pandoc command**
 4. **Run the pandoc command and check for errors**
 
@@ -200,75 +201,58 @@ We will discuss each part one by one.
 
 ### Program Header
 
-This part is self-explanatory and provides the header of the program
-in standard lua documentation format.
+The Python standard library provides everything required by the CLI. `Path` is
+used for reliable cross-platform paths, `shutil` locates Pandoc, and
+`subprocess` runs it without invoking a command shell.
 
-```lua {code_file="litpd.lua"}
---- litpd.lua - Main CLI program for litpd tool.
---
--- license: MIT see LICENSE file
--- date: 21/03/2024
--- author: Abhishek Mishra
+```python {code_file="litpd.py"}
+#!/usr/bin/env python3
+"""Command-line interface for litpd."""
+
+from __future__ import annotations
+
+import shlex
+import shutil
+import subprocess
+import sys
+from pathlib import Path
 ```
 
 ### Program Arguments
 
-In this section of the program, we first construct the `args` table from the
-program arguments.
+The first argument is the input literate-programming document. Any remaining
+arguments are passed to Pandoc unchanged. If no Pandoc options are supplied,
+litpd generates `program.html` by default.
 
-* The `script_path` stores the first argument which is usually the name of
-  the lua program being run, if this is run from a standard lua executable.
-* In case the `script_path` contains any windows `\` backslash path separators,
-  we replace them with `/` slashes.
-* The we match anything before the last `\` of the `script_path` as the path
-  of the directory containing the program, and store the result in `litmd_home`.
-* Next we define a function `show_usage` which prints the usage of the command,
-  this is used when the user does not pass the proper expected arguments to the
-  command.
-* Finally we look at the arguments:
-  * If the length of the args is 0, then we print usage and exit.
-  * If the first argument (i.e. the input literate programming document) is
-    not provided, then we print the usage and exit. Else we store the input file
-    name in `input_file`.
-  * The rest of the arguments are assumed to be pandoc arguments and are stored
-    in a separate table called `options`.
+```python {code_file="litpd.py"}
 
-```lua {code_file="litpd.lua"}
+VERSION = "0.3.0-beta.0"
+USAGE = "Usage: litpd.py <inputfile.md> [pandoc options]"
 
--- get the arguments from the command line
-local args = {...}
 
--- get the path of script, and its directory
-local script_path = arg[0]
--- replace all backslashes with forward slashes
-script_path = script_path:gsub("\\", "/")
-local litmd_home = script_path:match(".*/")
--- print("litmd_home: " .. litmd_home)
+def main(args: list[str]) -> int:
+    if args and args[0] in {"-V", "--version"}:
+        print(f"litpd {VERSION}")
+        return 0
 
---- Show usage
-local function show_usage()
-    print("Usage: litmd <inputfile.md> [options]")
-end
+    if not args or args[0] in {"-h", "--help"}:
+        print(USAGE)
+        return 0 if args else 2
 
--- if no arguments are provided, print the usage
-if #args == 0 then
-  show_usage()
-  return
-end
+    input_file = Path(args[0])
+    if not input_file.is_file():
+        print(f"Error: input file not found: {input_file}", file=sys.stderr)
+        return 2
 
--- get the input file name
-local input_file = args[1]
-if input_file == nil then
-    print("No input file provided")
-    show_usage()
-    return
-end
+    pandoc = shutil.which("pandoc")
+    if pandoc is None:
+        print(
+            "Error: Pandoc was not found. Install Pandoc and ensure it is in PATH.",
+            file=sys.stderr,
+        )
+        return 127
 
--- get the rest of the arguments
-local options = {}
-for i = 2, #args do
-    table.insert(options, args[i])
-end
+    options = args[1:] or ["--output=program.html"]
 ```
 
 ### Construct and Display Pandoc Command
@@ -276,62 +260,59 @@ end
 In the next section of the program we now construct the pandoc command to run
 such that both the output document, and output code are generated correctly.
 
-* The `CODEID_FILTER` variable is created to store the path to the lua pandoc
+* The `codeid_filter` variable is created to store the path to the Lua Pandoc
   filter which will extract the code from the input document which are marked
   with code_id and write it to individual source code fragment files with the
   same name.
-* The `TANGLE_FILTER` variable is created to store the path to the lua pandoc
+* The `tangle_filter` variable stores the path to the Lua Pandoc
   filter which will extract the code from the input document which are marked
   with code_file and write it to individual source code files.
-* The `PANDOC_CMD` variable stores a string which passes the lua-filter arg and
-  the markdown source type setting to the pandoc command.
-* Then we construct the command to be run in a variable called `cmd` from its
-  constituent parts. First the `PANDOC_CMD` then the `input_file` and finally
-  the rest of the args in the table `options` are added to the string `cmd`.
-* Once constructed the `cmd` string is displayed on the terminal.
+* The command is constructed as a list of arguments. This preserves spaces and
+  other characters in filenames and prevents a shell from interpreting user
+  input.
 
-```lua {code_file="litpd.lua"}
+```python {code_file="litpd.py"}
 
-local CODEID_FILTER= litmd_home .. "codeidextract.lua"
-local TANGLE_FILTER = litmd_home .. "mdtangle.lua"
-local PANDOC_CMD = "pandoc" .. " --lua-filter=" .. 
-            CODEID_FILTER .. " --lua-filter=" ..
-            TANGLE_FILTER .. " --from=markdown "
+    litpd_home = Path(__file__).resolve().parent
+    codeid_filter = litpd_home / "codeidextract.lua"
+    tangle_filter = litpd_home / "mdtangle.lua"
 
--- create the final command, start with the pandoc command
-local cmd = PANDOC_CMD
--- add the input file
-cmd = cmd .. input_file
--- add the rest of the options
-for i = 1, #options do
-    cmd = cmd .. " " .. options[i]
-end
+    for filter_file in (codeid_filter, tangle_filter):
+        if not filter_file.is_file():
+            print(f"Error: required filter not found: {filter_file}", file=sys.stderr)
+            return 2
 
--- display the command to be executed
-print("Executing: " .. cmd)
+    command = [
+        pandoc,
+        f"--lua-filter={codeid_filter}",
+        f"--lua-filter={tangle_filter}",
+        "--from=markdown",
+        str(input_file),
+        *options,
+    ]
+
+    print("Executing:", shlex.join(command))
 ```
 
 ### Run the Pandoc Command
 
-The last few lines of the program run the constructed `cmd` string using
-the `io.popen` library call. The call returns a handle to the output, which is
-stored in `handle`. We read the output from this output stream into a variable
-called `result` and then close the `handle`.
+`subprocess.run` connects Pandoc directly to the terminal. A Pandoc failure is
+returned to the caller as the CLI's exit status, making failures visible to
+scripts, build systems, and continuous integration.
 
-The `result` is printed to the terminal. And then the program is done.
+```python {code_file="litpd.py"}
 
-```lua {code_file="litpd.lua"}
+    try:
+        completed = subprocess.run(command, check=False)
+    except OSError as error:
+        print(f"Error: could not start Pandoc: {error}", file=sys.stderr)
+        return 1
 
--- execute the command
-local handle = io.popen(cmd)
-if handle == nil then
-    print("Error executing command")
-    return
-end
-local result = handle:read("*a")
-handle:close()
--- handle the result
-print(result)
+    return completed.returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
 ```
 
 ## Filter Program - codeidextract.lua

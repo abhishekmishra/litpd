@@ -1,2 +1,3 @@
-This folder contains bootstrap versions of the litpd.lua and mdtangle.lua
-which are used to generate the final versions of the program from **litpd.md**.
+This folder contains bootstrap versions of the Pandoc Lua filters. They are
+used to generate `litpd.py` and the release versions of the filters from
+**litpd.md**.

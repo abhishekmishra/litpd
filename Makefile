@@ -1,8 +1,8 @@
-.PHONY: all clean test luaenv docs dist
+.PHONY: all clean test docs dist
 
-VERSION = v0_1_0-alpha_1
+VERSION = 0.3.0-beta.0
 
-PANDOC_CMD = lua ./bootstrap/litpd.lua
+PANDOC_CMD = pandoc --lua-filter=./bootstrap/codeidextract.lua --lua-filter=./bootstrap/mdtangle.lua --from=markdown
 PANDOC_OPTS_HTML = --to=html --standalone --toc
 PANDOC_OPTS_PDF = --to=pdf --standalone --toc
 #
@@ -12,7 +12,9 @@ PANDOC_OPTS_PDF = --to=pdf --standalone --toc
 OSFLAG :=
 ifeq ($(OS),Windows_NT)
 	OSFLAG = WIN32
+	PYTHON ?= py
 else
+	PYTHON ?= python3
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
 		OSFLAG = LINUX
@@ -28,70 +30,49 @@ DIST_DIR = dist
 
 DOCS_DIR = docs
 
-all: $(BUILD_DIR) $(BUILD_DIR)/litpd.html
+RELEASE_FILES = litpd.py codeidextract.lua mdtangle.lua litpd.html HLDDiagram.png helloworld.md
+
+all: $(BUILD_DIR)/litpd.html
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-# TODO: since the lua files are currently generated in the current folder,
-# we need to move them to the build folder. This should not be necessary.
-
-$(BUILD_DIR)/%.html: %.md
-ifeq ($(OSFLAG),WIN32)
-	pwsh -Command ".luaenv/bin/activate.ps1 ; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
-else
-	bash -c "source .luaenv/bin/activate; $(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@"
-endif
-	mv litpd.lua $(BUILD_DIR)/
+$(BUILD_DIR)/%.html: %.md bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
+	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
+	mv litpd.py $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
-	cp litpd.ps1 $(BUILD_DIR)/
-	cp litpd.sh $(BUILD_DIR)/
 	cp helloworld.md $(BUILD_DIR)/
 
-$(BUILD_DIR)/%.pdf: %.md
+$(BUILD_DIR)/%.pdf: %.md bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
-	mv litpd.lua $(BUILD_DIR)/
+	mv litpd.py $(BUILD_DIR)/
 	mv mdtangle.lua $(BUILD_DIR)/
 	mv codeidextract.lua $(BUILD_DIR)/
 
-test:
-ifeq ($(OSFLAG),WIN32)
-	pwsh -Command ".luaenv/bin/activate.ps1 ; lua run_tests.lua"
-else
-	bash -c "source .luaenv/bin/activate ; lua run_tests.lua"
-endif
+test: all
+	$(PYTHON) -m unittest discover -s test -p "test_*.py" -v
 
-luaenv:
-	@echo "Setting up luaenv... "
-	@echo "IMPORTANT: RUN this from x64 Native Tools Command Prompt for VS"
-	hererocks .luaenv --lua 5.4 --luarocks latest
-ifeq ($(OSFLAG),WIN32)
-	pwsh -Command ".luaenv/bin/activate.ps1 ; luarocks install busted"
-else
-	bash -c "source .luaenv/bin/activate; luarocks install busted"
-endif
-
-docs:
+docs: all
 # copy litpd.html to docs folder
 	mkdir -p $(DOCS_DIR)
 	cp $(BUILD_DIR)/litpd.html $(DOCS_DIR)/index.html
 
 dist: all
+	mkdir -p $(DIST_DIR)
 ifeq ($(OSFLAG),WIN32)
-# zip the contents of the dist directory
-# and call it litpd-<version>.zip
-# where <version> is the value of VERSION
+# Create the Windows release zip.
 	cd $(BUILD_DIR) && \
-	zip -r ../$(DIST_DIR)/litpd.zip * && \
+	zip -r ../$(DIST_DIR)/litpd.zip $(RELEASE_FILES) && \
 	cd ..
 else
-# also create a tarball with the crlf replaced by lf
+# Create the Unix release tarball.
 	cd $(BUILD_DIR) && \
-	tar -czf ../$(DIST_DIR)/litpd.tar.gz * && \
+	tar -czf ../$(DIST_DIR)/litpd.tar.gz $(RELEASE_FILES) && \
 	cd ..
 endif
 
 clean:
-	rm -f $(BUILD_DIR)/*
+	rm -rf $(BUILD_DIR)/__pycache__
+	rm -f $(BUILD_DIR)/* $(DIST_DIR)/*

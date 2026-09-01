@@ -50,5 +50,9 @@ out/
 .luaenv/
 *.tmp
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+
 # macos temp files
 .DS_Store

@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Abhishek Mishra &lt;https://neolateral.in&gt;" />
   <title>litpd: Literate Programming for Pandoc Markdown</title>
   <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -39,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -89,6 +91,7 @@
       color: #606060;
     }
     code {
+      white-space: pre-wrap;
       font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
       font-size: 85%;
       margin: 0;
@@ -108,8 +111,8 @@
      overflow: visible;
     }
     hr {
-      background-color: #1a1a1a;
       border: none;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -152,10 +155,13 @@
     #TOC a:not(:hover) {
       text-decoration: none;
     }
-    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -252,8 +258,8 @@ Programming?</a></li>
 <li><a href="#getting-started" id="toc-getting-started">Getting
 Started</a>
 <ul>
-<li><a href="#installing-lua" id="toc-installing-lua">Installing
-Lua</a></li>
+<li><a href="#installing-python" id="toc-installing-python">Installing
+Python</a></li>
 <li><a href="#installing-pandoc" id="toc-installing-pandoc">Installing
 Pandoc</a></li>
 <li><a href="#installing-litpd" id="toc-installing-litpd">Installing
@@ -276,8 +282,8 @@ Program</a>
 <ul>
 <li><a href="#components-of-litpd"
 id="toc-components-of-litpd">Components of litpd</a></li>
-<li><a href="#cli-program---litpd.lua"
-id="toc-cli-program---litpd.lua">CLI Program - litpd.lua</a>
+<li><a href="#cli-program---litpd.py"
+id="toc-cli-program---litpd.py">CLI Program - litpd.py</a>
 <ul>
 <li><a href="#program-header" id="toc-program-header">Program
 Header</a></li>
@@ -343,6 +349,12 @@ Export</a></li>
 <td>First beta release, support for powershell and bash scripts and
 installation procedure documented.</td>
 </tr>
+<tr>
+<td>0.3.0-beta.0</td>
+<td>01/09/2026</td>
+<td>Replace the Lua, PowerShell, and Bash launchers with a
+cross-platform Python CLI.</td>
+</tr>
 </tbody>
 </table>
 <h1 id="introduction">Introduction</h1>
@@ -380,17 +392,19 @@ language.</p>
 <p>To quickly get started with using the litpd program, follow the
 instructions to ensure you have the pre-requisites and then install and
 test the litpd release.</p>
-<p>There are two pre-requisites</p>
+<p>There are two pre-requisites:</p>
 <ol type="1">
-<li>Lua (install the latest 5.4 version)</li>
+<li>Python 3.8 or newer</li>
 <li>Pandoc (install the latest available for your platform)</li>
 </ol>
-<h2 id="installing-lua">Installing Lua</h2>
-<p>See the getting started page on the lua website for instructions on
-how to get started with lua -&gt; <a
-href="https://www.lua.org/start.html">Lua: Installation</a>.</p>
-<p><strong>Important: Ensure lua is added to the path after
-installation</strong></p>
+<p>The Lua filters are executed by Pandoc. A separate Lua installation
+is not required.</p>
+<h2 id="installing-python">Installing Python</h2>
+<p>See the downloads page on the Python website for installation
+packages and instructions -&gt; <a
+href="https://www.python.org/downloads/">Python: Downloads</a>.</p>
+<p><strong>Important: Ensure Python is added to the path after
+installation.</strong></p>
 <h2 id="installing-pandoc">Installing Pandoc</h2>
 <p>See instructions for your platform at the pandoc website -&gt; <a
 href="https://pandoc.org/installing.html">Installing Pandoc</a>.</p>
@@ -416,21 +430,20 @@ programming languages.</p>
 <p><em>Open <code>helloworld.md</code> program in your favourite text
 editor to see what it looks like.</em></p>
 <h3 id="windows-1">Windows</h3>
-<p>On Windows we run the litpd program using the powershell script
-<code>litpd.ps1</code>.</p>
+<p>On Windows, run the Python program with the Python launcher:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to the litpd directory</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> litpd</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run litpd with helloworld.md</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">./</span>litpd<span class="op">.</span><span class="fu">ps1</span> helloworld<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>py litpd<span class="op">.</span><span class="fu">py</span> helloworld<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
 <h3 id="linuxmacosunix-like-1">Linux/MacOS/Unix-like</h3>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to the litpd directory</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> litpd</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run litpd with helloworld.md</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./litpd.ps1</span> helloworld.md</span></code></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> litpd.py helloworld.md</span></code></pre></div>
 <h3 id="result">Result</h3>
 <p>You should now see the following files:</p>
 <ol type="1">
@@ -440,9 +453,10 @@ the program.</li>
 programs generated from <code>helloworld.md</code>.</li>
 </ol>
 <h1 id="the-litpd-program">The litpd Program</h1>
-<p>The litpd program is written in the <a
-href="https://lua.org/about.html">Lua programming language</a>. The goal
-of the program is two-fold:</p>
+<p>The litpd command-line program is written in Python. Its Pandoc
+filters are written in the <a href="https://lua.org/about.html">Lua
+programming language</a>, the language supported by Pandoc’s built-in
+scripting engine. The goal of the program is two-fold:</p>
 <ol type="1">
 <li><strong>Readable Program</strong>: Generate a publishable/printable
 Program Description in HTML or PDF formats.</li>
@@ -463,23 +477,18 @@ below.</p>
 <h2 id="components-of-litpd">Components of litpd</h2>
 <p>As you have seen in the design diagram above, the litpd process uses
 pandoc to generate both the readable and runnable avatars of the
-program. The user of litpd interacts with a shell program (for their
-o/s, powershell on windows and bash on unix-like). This shell program
-ensures <em>lua</em> and <em>pandoc</em> are available. It then starts
-up <em>litpd.lua</em> which orchestrates <em>pando</em> and injects it
-with <em>filter</em> programs <em>codeidextract.lua</em> and
-<em>mdtangle.lua</em> to get the runnable avatar of the program. Since
-the input program in already in pandoc markdown format, pandoc can be
-used trivially to get the readable avatar of the literate program.</p>
+program. The user of litpd interacts directly with the cross-platform
+Python program <em>litpd.py</em>. This program ensures Pandoc is
+available, then starts Pandoc with the filter programs
+<em>codeidextract.lua</em> and <em>mdtangle.lua</em> to get the runnable
+avatar of the program. Since the input program is already in Pandoc
+markdown format, pandoc can be used trivially to get the readable avatar
+of the literate program.</p>
 <p>Therefore, the <strong>litpd</strong> application is composed of the
 following components:</p>
 <ol type="1">
-<li><strong>litpd.ps1/litpd.sh</strong>: This is the main entry-point of
-the program. The user interacts with this program to get the readable
-and runnable programs from the markdown document they have
-authored.</li>
-<li><strong>litpd.lua</strong>: This program is the main cli tool used
-to generate the publishable document and the runnable program from the
+<li><strong>litpd.py</strong>: This program is the main CLI tool used to
+generate the publishable document and the runnable program from the
 input literate program written in the <a
 href="https://pandoc.org/MANUAL.html#pandocs-markdown">pandoc markdown
 format</a>.</li>
@@ -493,8 +502,8 @@ href="https://pandoc.org/lua-filters.html">pandoc lua filter</a>. The
 goal of this program is to use the file id’s or code id’s of the program
 fragments and load the appropriate code-blocks for each.</li>
 </ol>
-<h2 id="cli-program---litpd.lua">CLI Program - litpd.lua</h2>
-<p>The <code>litpd.lua</code> program provides a command line interface
+<h2 id="cli-program---litpd.py">CLI Program - litpd.py</h2>
+<p>The <code>litpd.py</code> program provides a command line interface
 to the literate programming tool. It allows us to run the pandoc
 conversion of the literate program document into the publishable
 document and the runnable program using the <code>mdtangle.lua</code>
@@ -503,152 +512,122 @@ locations.</p>
 <p>The program has the following parts:</p>
 <ol type="1">
 <li><strong>Program documentation</strong></li>
-<li><strong>Extract program arguments &amp; check required
-arguments</strong></li>
+<li><strong>Extract program arguments and check
+prerequisites</strong></li>
 <li><strong>Construct the pandoc command</strong></li>
 <li><strong>Run the pandoc command and check for errors</strong></li>
 </ol>
 <p>We will discuss each part one by one.</p>
 <h3 id="program-header">Program Header</h3>
-<p>This part is self-explanatory and provides the header of the program
-in standard lua documentation format.</p>
-<strong>file: litpd.lua</strong>
-<div class="sourceCode" id="cb5" data-code_file="litpd.lua"><pre
-class="sourceCode lua"><code class="sourceCode lua"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">--- litpd.lua - Main CLI program for litpd tool.</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- license: MIT see LICENSE file</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- date: 21/03/2024</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- author: Abhishek Mishra</span></span></code></pre></div>
+<p>The Python standard library provides everything required by the CLI.
+<code>Path</code> is used for reliable cross-platform paths,
+<code>shutil</code> locates Pandoc, and <code>subprocess</code> runs it
+without invoking a command shell.</p>
+<strong>file: litpd.py</strong>
+<div class="sourceCode" id="cb5" data-code_file="litpd.py"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python3</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Command-line interface for litpd.&quot;&quot;&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shlex</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span></code></pre></div>
 <h3 id="program-arguments">Program Arguments</h3>
-<p>In this section of the program, we first construct the
-<code>args</code> table from the program arguments.</p>
-<ul>
-<li>The <code>script_path</code> stores the first argument which is
-usually the name of the lua program being run, if this is run from a
-standard lua executable.</li>
-<li>In case the <code>script_path</code> contains any windows
-<code>\</code> backslash path separators, we replace them with
-<code>/</code> slashes.</li>
-<li>The we match anything before the last <code>\</code> of the
-<code>script_path</code> as the path of the directory containing the
-program, and store the result in <code>litmd_home</code>.</li>
-<li>Next we define a function <code>show_usage</code> which prints the
-usage of the command, this is used when the user does not pass the
-proper expected arguments to the command.</li>
-<li>Finally we look at the arguments:
-<ul>
-<li>If the length of the args is 0, then we print usage and exit.</li>
-<li>If the first argument (i.e. the input literate programming document)
-is not provided, then we print the usage and exit. Else we store the
-input file name in <code>input_file</code>.</li>
-<li>The rest of the arguments are assumed to be pandoc arguments and are
-stored in a separate table called <code>options</code>.</li>
-</ul></li>
-</ul>
-<strong>file: litpd.lua</strong>
-<div class="sourceCode" id="cb6" data-code_file="litpd.lua"><pre
-class="sourceCode lua"><code class="sourceCode lua"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- get the arguments from the command line</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">args</span> <span class="op">=</span> <span class="op">{...}</span></span>
+<p>The first argument is the input literate-programming document. Any
+remaining arguments are passed to Pandoc unchanged. If no Pandoc options
+are supplied, litpd generates <code>program.html</code> by default.</p>
+<strong>file: litpd.py</strong>
+<div class="sourceCode" id="cb6" data-code_file="litpd.py"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>VERSION <span class="op">=</span> <span class="st">&quot;0.3.0-beta.0&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>USAGE <span class="op">=</span> <span class="st">&quot;Usage: litpd.py &lt;inputfile.md&gt; [pandoc options]&quot;</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- get the path of script, and its directory</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">script_path</span> <span class="op">=</span> <span class="va">arg</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- replace all backslashes with forward slashes</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="va">script_path</span> <span class="op">=</span> <span class="va">script_path</span><span class="op">:</span><span class="fu">gsub</span><span class="op">(</span><span class="st">&quot;</span><span class="sc">\\</span><span class="st">&quot;</span><span class="op">,</span> <span class="st">&quot;/&quot;</span><span class="op">)</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">litmd_home</span> <span class="op">=</span> <span class="va">script_path</span><span class="op">:</span><span class="fu">match</span><span class="op">(</span><span class="st">&quot;.*/&quot;</span><span class="op">)</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- print(&quot;litmd_home: &quot; .. litmd_home)</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">--- Show usage</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="kw">function</span> show_usage<span class="op">()</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span><span class="op">(</span><span class="st">&quot;Usage: litmd &lt;inputfile.md&gt; [options]&quot;</span><span class="op">)</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- if no arguments are provided, print the usage</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">#</span><span class="va">args</span> <span class="op">==</span> <span class="dv">0</span> <span class="cf">then</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  show_usage<span class="op">()</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- get the input file name</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">input_file</span> <span class="op">=</span> <span class="va">args</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">input_file</span> <span class="op">==</span> <span class="kw">nil</span> <span class="cf">then</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span><span class="op">(</span><span class="st">&quot;No input file provided&quot;</span><span class="op">)</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    show_usage<span class="op">()</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">-- get the rest of the arguments</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">options</span> <span class="op">=</span> <span class="op">{}</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="va">i</span> <span class="op">=</span> <span class="dv">2</span><span class="op">,</span> <span class="op">#</span><span class="va">args</span> <span class="cf">do</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">table.insert</span><span class="op">(</span><span class="va">options</span><span class="op">,</span> <span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">])</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main(args: <span class="bu">list</span>[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> args <span class="kw">and</span> args[<span class="dv">0</span>] <span class="kw">in</span> {<span class="st">&quot;-V&quot;</span>, <span class="st">&quot;--version&quot;</span>}:</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;litpd </span><span class="sc">{</span>VERSION<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> args <span class="kw">or</span> args[<span class="dv">0</span>] <span class="kw">in</span> {<span class="st">&quot;-h&quot;</span>, <span class="st">&quot;--help&quot;</span>}:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(USAGE)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span> <span class="cf">if</span> args <span class="cf">else</span> <span class="dv">2</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    input_file <span class="op">=</span> Path(args[<span class="dv">0</span>])</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> input_file.is_file():</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Error: input file not found: </span><span class="sc">{</span>input_file<span class="sc">}</span><span class="ss">&quot;</span>, <span class="bu">file</span><span class="op">=</span>sys.stderr)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    pandoc <span class="op">=</span> shutil.which(<span class="st">&quot;pandoc&quot;</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pandoc <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Error: Pandoc was not found. Install Pandoc and ensure it is in PATH.&quot;</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            <span class="bu">file</span><span class="op">=</span>sys.stderr,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">127</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    options <span class="op">=</span> args[<span class="dv">1</span>:] <span class="kw">or</span> [<span class="st">&quot;--output=program.html&quot;</span>]</span></code></pre></div>
 <h3 id="construct-and-display-pandoc-command">Construct and Display
 Pandoc Command</h3>
 <p>In the next section of the program we now construct the pandoc
 command to run such that both the output document, and output code are
 generated correctly.</p>
 <ul>
-<li>The <code>CODEID_FILTER</code> variable is created to store the path
-to the lua pandoc filter which will extract the code from the input
+<li>The <code>codeid_filter</code> variable is created to store the path
+to the Lua Pandoc filter which will extract the code from the input
 document which are marked with code_id and write it to individual source
 code fragment files with the same name.</li>
-<li>The <code>TANGLE_FILTER</code> variable is created to store the path
-to the lua pandoc filter which will extract the code from the input
-document which are marked with code_file and write it to individual
-source code files.</li>
-<li>The <code>PANDOC_CMD</code> variable stores a string which passes
-the lua-filter arg and the markdown source type setting to the pandoc
-command.</li>
-<li>Then we construct the command to be run in a variable called
-<code>cmd</code> from its constituent parts. First the
-<code>PANDOC_CMD</code> then the <code>input_file</code> and finally the
-rest of the args in the table <code>options</code> are added to the
-string <code>cmd</code>.</li>
-<li>Once constructed the <code>cmd</code> string is displayed on the
-terminal.</li>
+<li>The <code>tangle_filter</code> variable stores the path to the Lua
+Pandoc filter which will extract the code from the input document which
+are marked with code_file and write it to individual source code
+files.</li>
+<li>The command is constructed as a list of arguments. This preserves
+spaces and other characters in filenames and prevents a shell from
+interpreting user input.</li>
 </ul>
-<strong>file: litpd.lua</strong>
-<div class="sourceCode" id="cb7" data-code_file="litpd.lua"><pre
-class="sourceCode lua"><code class="sourceCode lua"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="cn">CODEID_FILTER</span><span class="op">=</span> <span class="va">litmd_home</span> <span class="op">..</span> <span class="st">&quot;codeidextract.lua&quot;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="cn">TANGLE_FILTER</span> <span class="op">=</span> <span class="va">litmd_home</span> <span class="op">..</span> <span class="st">&quot;mdtangle.lua&quot;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="cn">PANDOC_CMD</span> <span class="op">=</span> <span class="st">&quot;pandoc&quot;</span> <span class="op">..</span> <span class="st">&quot; --lua-filter=&quot;</span> <span class="op">..</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="cn">CODEID_FILTER</span> <span class="op">..</span> <span class="st">&quot; --lua-filter=&quot;</span> <span class="op">..</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TANGLE_FILTER</span> <span class="op">..</span> <span class="st">&quot; --from=markdown &quot;</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- create the final command, start with the pandoc command</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">cmd</span> <span class="op">=</span> <span class="cn">PANDOC_CMD</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- add the input file</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="va">cmd</span> <span class="op">=</span> <span class="va">cmd</span> <span class="op">..</span> <span class="va">input_file</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- add the rest of the options</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="va">i</span> <span class="op">=</span> <span class="dv">1</span><span class="op">,</span> <span class="op">#</span><span class="va">options</span> <span class="cf">do</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="va">cmd</span> <span class="op">=</span> <span class="va">cmd</span> <span class="op">..</span> <span class="st">&quot; &quot;</span> <span class="op">..</span> <span class="va">options</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- display the command to be executed</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span><span class="op">(</span><span class="st">&quot;Executing: &quot;</span> <span class="op">..</span> <span class="va">cmd</span><span class="op">)</span></span></code></pre></div>
+<strong>file: litpd.py</strong>
+<div class="sourceCode" id="cb7" data-code_file="litpd.py"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    litpd_home <span class="op">=</span> Path(<span class="va">__file__</span>).resolve().parent</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    codeid_filter <span class="op">=</span> litpd_home <span class="op">/</span> <span class="st">&quot;codeidextract.lua&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    tangle_filter <span class="op">=</span> litpd_home <span class="op">/</span> <span class="st">&quot;mdtangle.lua&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filter_file <span class="kw">in</span> (codeid_filter, tangle_filter):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> filter_file.is_file():</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;Error: required filter not found: </span><span class="sc">{</span>filter_file<span class="sc">}</span><span class="ss">&quot;</span>, <span class="bu">file</span><span class="op">=</span>sys.stderr)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="dv">2</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    command <span class="op">=</span> [</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        pandoc,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;--lua-filter=</span><span class="sc">{</span>codeid_filter<span class="sc">}</span><span class="ss">&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;--lua-filter=</span><span class="sc">{</span>tangle_filter<span class="sc">}</span><span class="ss">&quot;</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--from=markdown&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">str</span>(input_file),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span>options,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Executing:&quot;</span>, shlex.join(command))</span></code></pre></div>
 <h3 id="run-the-pandoc-command">Run the Pandoc Command</h3>
-<p>The last few lines of the program run the constructed
-<code>cmd</code> string using the <code>io.popen</code> library call.
-The call returns a handle to the output, which is stored in
-<code>handle</code>. We read the output from this output stream into a
-variable called <code>result</code> and then close the
-<code>handle</code>.</p>
-<p>The <code>result</code> is printed to the terminal. And then the
-program is done.</p>
-<strong>file: litpd.lua</strong>
-<div class="sourceCode" id="cb8" data-code_file="litpd.lua"><pre
-class="sourceCode lua"><code class="sourceCode lua"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- execute the command</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">handle</span> <span class="op">=</span> <span class="fu">io.popen</span><span class="op">(</span><span class="va">cmd</span><span class="op">)</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">handle</span> <span class="op">==</span> <span class="kw">nil</span> <span class="cf">then</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span><span class="op">(</span><span class="st">&quot;Error executing command&quot;</span><span class="op">)</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">result</span> <span class="op">=</span> <span class="va">handle</span><span class="op">:</span><span class="fu">read</span><span class="op">(</span><span class="st">&quot;*a&quot;</span><span class="op">)</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="va">handle</span><span class="op">:</span><span class="fu">close</span><span class="op">()</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- handle the result</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
+<p><code>subprocess.run</code> connects Pandoc directly to the terminal.
+A Pandoc failure is returned to the caller as the CLI’s exit status,
+making failures visible to scripts, build systems, and continuous
+integration.</p>
+<strong>file: litpd.py</strong>
+<div class="sourceCode" id="cb8" data-code_file="litpd.py"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        completed <span class="op">=</span> subprocess.run(command, check<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">OSError</span> <span class="im">as</span> error:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Error: could not start Pandoc: </span><span class="sc">{</span>error<span class="sc">}</span><span class="ss">&quot;</span>, <span class="bu">file</span><span class="op">=</span>sys.stderr)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> completed.returncode</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">SystemExit</span>(main(sys.argv[<span class="dv">1</span>:]))</span></code></pre></div>
 <h2 id="filter-program---codeidextract.lua">Filter Program -
 codeidextract.lua</h2>
 <p>The <code>codeidextract.lua</code> program is a <a

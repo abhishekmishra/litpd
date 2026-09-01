@@ -23,8 +23,8 @@ See the [Getting Started](https://abhishekmishra.github.io/litpd/#getting-starte
 
 **Pre-requisites for build:**
 
-1. Lua interpreter in path.
-2. gnu make in path.
+1. Python 3.8 or newer in path.
+2. GNU Make in path.
 3. Pandoc in path.
 
 In the directory containing the **litpd** source, run the following command:
@@ -33,8 +33,8 @@ In the directory containing the **litpd** source, run the following command:
 $ make clean all
 ```
 
-This will create a **dist** directory and generate all the build artifacts in
-this directory.
+This will create a **build** directory and generate all the build artifacts in
+this directory. Run `make dist` to create a release archive in **dist**.
 
 ## Example
 
@@ -56,12 +56,14 @@ print('hello')
 
 If we run the following litpd command...
 
-```bash
+```powershell
 # Windows
-litpd.ps1 hello.md
+py litpd.py hello.md
+```
 
+```bash
 # Linux/MacOS
-litpd.sh hello.md
+python3 litpd.py hello.md
 ```
 
 Two files will be generated in the current folder:
