@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "litpd"
+version = "0.3.1b0"
+description = "Literate programming tools for Pandoc Markdown"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Abhishek Mishra", email = "abhishekmishra3@gmail.com"}]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Build Tools",
+]
+keywords = ["literate-programming", "markdown", "pandoc"]
+
+[project.urls]
+Homepage = "https://github.com/abhishekmishra/litpd"
+Documentation = "https://abhishekmishra.github.io/litpd/"
+Repository = "https://github.com/abhishekmishra/litpd"
+Issues = "https://github.com/abhishekmishra/litpd/issues"
+
+[project.scripts]
+litpd = "litpd.cli:main"
+
+[tool.setuptools.package-data]
+litpd = ["litpd_filter.lua"]

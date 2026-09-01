@@ -2,7 +2,7 @@
 
 This file documents major changes in every release of the project. The project follows [Semantic Versioning](https://semver.org/). There is a section for each release - which lists major changes made in the release.
 
-**0.3.1-beta.0** 2026-09-01 Abhishek Mishra <abhishekmishra3@gmail.com>
+**0.3.1b0** 2026-09-01 Abhishek Mishra <abhishekmishra3@gmail.com>
 
 - Replaced the two Lua filters and their temporary `code_id` fragment files
   with a single in-memory tangling filter.
@@ -10,6 +10,8 @@ This file documents major changes in every release of the project. The project f
   assembles them into its final Lua file.
 - `code_id` references now support underscores in addition to letters and
   digits.
+- Published the Python package distribution, with a `litpd` command and the
+  Pandoc filter bundled as package data.
 
 **0.3.0-beta.0** 2026-09-01 Abhishek Mishra <abhishekmishra3@gmail.com>
 

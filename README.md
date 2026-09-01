@@ -15,7 +15,13 @@ This program is written as a "literate program" in markdown. See
 # Getting Started
 
 **litpd** is a command-line application to be used in your own build or document
-generation process.
+generation process. Install it with [pipx](https://pipx.pypa.io/):
+
+```bash
+pipx install litpd
+```
+
+Pandoc is still required and must be available on `PATH`.
 
 See the [Getting Started](https://abhishekmishra.github.io/litpd/#getting-started) page.
 
@@ -34,7 +40,9 @@ $ make clean all
 ```
 
 This will create a **build** directory and generate all the build artifacts in
-this directory. Run `make dist` to create a release archive in **dist**.
+this directory. Run `make dist` to create a release archive in **dist**, or
+`make package` to build the PyPI wheel and source distribution (requires the
+[`build`](https://pypa-build.readthedocs.io/) package).
 
 ## Example
 
@@ -57,13 +65,7 @@ print('hello')
 If we run the following litpd command...
 
 ```powershell
-# Windows
-py litpd.py hello.md
-```
-
-```bash
-# Linux/MacOS
-python3 litpd.py hello.md
+litpd hello.md
 ```
 
 Two files will be generated in the current folder:

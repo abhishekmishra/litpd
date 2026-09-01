@@ -53,6 +53,7 @@ out/
 # Python bytecode
 __pycache__/
 *.py[cod]
+*.egg-info/
 
 # macos temp files
 .DS_Store

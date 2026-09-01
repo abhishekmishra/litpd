@@ -70,6 +70,15 @@ class LitpdIntegrationTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0)
         self.assertIn("Usage:", completed.stdout)
 
+    def test_main_uses_process_arguments_by_default(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(LITPD), "--version"],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(completed.returncode, 0)
+        self.assertEqual(completed.stdout.strip(), "litpd 0.3.1b0")
+
     def test_version(self) -> None:
         completed = subprocess.run(
             [sys.executable, str(LITPD), "--version"],
@@ -77,7 +86,7 @@ class LitpdIntegrationTests(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(completed.returncode, 0)
-        self.assertEqual(completed.stdout.strip(), "litpd 0.3.1-beta.0")
+        self.assertEqual(completed.stdout.strip(), "litpd 0.3.1b0")
 
     def test_paths_with_spaces(self) -> None:
         with tempfile.TemporaryDirectory(prefix="litpd test ") as temp_dir:

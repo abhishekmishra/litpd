@@ -1,6 +1,6 @@
-.PHONY: all clean test docs dist
+.PHONY: all clean test docs dist package
 
-VERSION = 0.3.1-beta.0
+VERSION = 0.3.1b0
 
 PANDOC_CMD = pandoc --lua-filter=./bootstrap/litpd_filter.lua --from=markdown
 PANDOC_OPTS_HTML = --to=html --standalone --toc --css=litpd.css
@@ -26,6 +26,10 @@ endif
 
 BUILD_DIR = build
 
+PACKAGE_DIR = src/litpd
+PACKAGE_CLI = $(PACKAGE_DIR)/cli.py
+PACKAGE_FILTER = $(PACKAGE_DIR)/litpd_filter.lua
+
 DIST_DIR = dist
 
 DOCS_DIR = docs
@@ -37,18 +41,21 @@ all: $(BUILD_DIR)/litpd.html
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/%.html: %.md litpd.css bootstrap/litpd_filter.lua | $(BUILD_DIR)
+$(PACKAGE_DIR):
+	mkdir -p $(PACKAGE_DIR)
+
+$(BUILD_DIR)/%.html: %.md litpd.css bootstrap/litpd_filter.lua | $(BUILD_DIR) $(PACKAGE_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
-	mv litpd.py $(BUILD_DIR)/
-	mv litpd_filter.lua $(BUILD_DIR)/
+	cp $(PACKAGE_CLI) $(BUILD_DIR)/litpd.py
+	cp $(PACKAGE_FILTER) $(BUILD_DIR)/litpd_filter.lua
 	cp HLDDiagram.png $(BUILD_DIR)/
 	cp litpd.css $(BUILD_DIR)/
 	cp helloworld.md $(BUILD_DIR)/
 
-$(BUILD_DIR)/%.pdf: %.md bootstrap/litpd_filter.lua | $(BUILD_DIR)
+$(BUILD_DIR)/%.pdf: %.md bootstrap/litpd_filter.lua | $(BUILD_DIR) $(PACKAGE_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
-	mv litpd.py $(BUILD_DIR)/
-	mv litpd_filter.lua $(BUILD_DIR)/
+	cp $(PACKAGE_CLI) $(BUILD_DIR)/litpd.py
+	cp $(PACKAGE_FILTER) $(BUILD_DIR)/litpd_filter.lua
 
 test: all
 	$(PYTHON) -m unittest discover -s test -p "test_*.py" -v
@@ -72,6 +79,9 @@ else
 	tar -czf ../$(DIST_DIR)/litpd.tar.gz $(RELEASE_FILES) && \
 	cd ..
 endif
+
+package: all
+	$(PYTHON) -m build
 
 clean:
 	rm -rf $(BUILD_DIR)/__pycache__

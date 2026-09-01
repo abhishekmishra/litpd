@@ -12,7 +12,7 @@ author: "[Abhishek Mishra](https://neolateral.in)"
 | 0.1a-alpha.1 | 10/04/2024 | Second alpha release, add code fragments with code_id support.                                            |
 | 0.2.0-beta.0 | 18/05/2025 | First beta release, support for powershell and bash scripts and installation procedure documented.        |
 | 0.3.0-beta.0 | 01/09/2026 | Replace the Lua, PowerShell, and Bash launchers with a cross-platform Python CLI.                         |
-| 0.3.1-beta.0 | 01/09/2026 | Replace temporary code-fragment files with an in-memory filter and organize the filter as code_id chunks. |
+| 0.3.1b0 | 01/09/2026 | Replace temporary code-fragment files with an in-memory filter, organize the filter as code_id chunks, and publish a Python package. |
 
 # Introduction
 
@@ -53,7 +53,7 @@ ensure you have the pre-requisites and then install and test the litpd release.
 
 There are two pre-requisites:
 
-1. Python 3.8 or newer
+1. Python 3.8 or newer (only for the source/archive distribution)
 2. Pandoc (install the latest available for your platform)
 
 The Lua filters are executed by Pandoc. A separate Lua installation is not
@@ -74,6 +74,18 @@ See instructions for your platform at the pandoc website ->
 **Important: Ensure pandoc is added to the path after installation**
 
 ## Installing litpd
+
+The recommended installation method is [pipx](https://pipx.pypa.io/), which
+installs the command in an isolated Python environment:
+
+```bash
+pipx install litpd
+```
+
+You can then run `litpd` from any directory. Pandoc must still be installed and
+available on your `PATH`.
+
+### Archive distribution
 
 1. Create litpd directory and change to it.
 2. Download the latest release zip.
@@ -109,7 +121,7 @@ On Windows, run the Python program with the Python launcher:
 cd litpd
 
 # Run litpd with helloworld.md
-py litpd.py helloworld.md
+litpd helloworld.md
 ```
 
 ### Linux/MacOS/Unix-like
@@ -119,7 +131,7 @@ py litpd.py helloworld.md
 cd litpd
 
 # Run litpd with helloworld.md
-python3 litpd.py helloworld.md
+litpd helloworld.md
 ```
 
 ### Result
@@ -158,32 +170,39 @@ The approach is also described in the High-level design diagram below.
 
 As you have seen in the design diagram above, the litpd process uses pandoc
 to generate both the readable and runnable avatars of the program. The user of
-litpd interacts directly with the cross-platform Python program _litpd.py_.
-This program ensures Pandoc is available, then starts Pandoc with the filter
-programs _codeidextract.lua_ and _mdtangle.lua_ to get the runnable avatar of
-the program. Since the input program is already in Pandoc
+litpd interacts directly with the cross-platform `litpd` command. This program
+ensures Pandoc is available, then starts Pandoc with its bundled Lua filter to
+get the runnable avatar of the program. Since the input program is already in Pandoc
 markdown format, pandoc can be used trivially to get the readable avatar of the
 literate program.
 
 Therefore, the **litpd** application is composed of the following components:
 
-1. **litpd.py**: This program is the main CLI tool used to generate the
+1. **litpd**: This command is the main CLI tool used to generate the
    publishable document and the runnable program from the input literate
    program written in the [pandoc markdown format][5].
-2. **mdtangle.lua**: This program is a [pandoc lua filter][6]. The goal of this
-   program is to run during the filter phase of document generation and extract
-   the source code of the literate program into proper output program files.
-3. **codeidextract.lua**: This program is also a [pandoc lua filter][6]. The
-   goal of this program is to use the file id's or code id's of the program
-   fragments and load the appropriate code-blocks for each.
+2. **litpd_filter.lua**: This [Pandoc Lua filter][6] runs during document
+   generation and extracts the source code of the literate program into proper
+   output program files, expanding reusable `code_id` fragments along the way.
 
 [4]: https://lua.org/about.html
 [5]: https://pandoc.org/MANUAL.html#pandocs-markdown
 [6]: https://pandoc.org/lua-filters.html
 
-## CLI Program - litpd.py
+## Package Initializer
 
-The `litpd.py` program provides a command line interface to the literate
+The installed distribution is a Python package. Its initializer exposes the
+same PEP 440 version used in the package metadata.
+
+```python {code_file="src/litpd/__init__.py"}
+"""Literate programming tools for Pandoc Markdown."""
+
+__version__ = "0.3.1b0"
+```
+
+## CLI Program - litpd
+
+The `litpd` command provides a command line interface to the literate
 programming tool. It allows us to run the pandoc conversion of the literate
 program document into the publishable document and the runnable program using
 the `mdtangle.lua` filter as well as compile the output into proper files at
@@ -204,7 +223,7 @@ The Python standard library provides everything required by the CLI. `Path` is
 used for reliable cross-platform paths, `shutil` locates Pandoc, and
 `subprocess` runs it without invoking a command shell.
 
-```python {code_file="litpd.py"}
+```python {code_file="src/litpd/cli.py"}
 #!/usr/bin/env python3
 """Command-line interface for litpd."""
 
@@ -215,6 +234,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import List, Optional
 ```
 
 ### Program Arguments
@@ -223,13 +243,16 @@ The first argument is the input literate-programming document. Any remaining
 arguments are passed to Pandoc unchanged. If no Pandoc options are supplied,
 litpd generates `program.html` by default.
 
-```python {code_file="litpd.py"}
+```python {code_file="src/litpd/cli.py"}
 
-VERSION = "0.3.1-beta.0"
-USAGE = "Usage: litpd.py <inputfile.md> [pandoc options]"
+VERSION = "0.3.1b0"
+USAGE = "Usage: litpd <inputfile.md> [pandoc options]"
 
 
-def main(args: list[str]) -> int:
+def main(args: Optional[List[str]] = None) -> int:
+    if args is None:
+        args = sys.argv[1:]
+
     if args and args[0] in {"-V", "--version"}:
         print(f"litpd {VERSION}")
         return 0
@@ -266,7 +289,7 @@ such that both the output document, and output code are generated correctly.
   other characters in filenames and prevents a shell from interpreting user
   input.
 
-```python {code_file="litpd.py"}
+```python {code_file="src/litpd/cli.py"}
 
     litpd_home = Path(__file__).resolve().parent
     tangle_filter = litpd_home / "litpd_filter.lua"
@@ -292,7 +315,7 @@ such that both the output document, and output code are generated correctly.
 returned to the caller as the CLI's exit status, making failures visible to
 scripts, build systems, and continuous integration.
 
-```python {code_file="litpd.py"}
+```python {code_file="src/litpd/cli.py"}
 
     try:
         completed = subprocess.run(command, check=False)
@@ -447,7 +470,7 @@ end
 
 ### Assemble the Filter
 
-```lua {code_file="litpd_filter.lua"}
+```lua {code_file="src/litpd/litpd_filter.lua"}
 @<filter_header@>
 @<filter_collect@>
 @<filter_expand@>
