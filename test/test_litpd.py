@@ -50,10 +50,9 @@ class LitpdIntegrationTests(unittest.TestCase):
         work_dir = self.run_litpd("test1-codewfname.md")
         self.assertTrue((work_dir / "out" / "helloworld.lua").is_file())
 
-    def test_code_ids_are_extracted(self) -> None:
+    def test_code_ids_do_not_create_temp_files(self) -> None:
         work_dir = self.run_litpd("test2-codeids.md")
-        self.assertTrue((work_dir / "fnsay.tmp").is_file())
-        self.assertTrue((work_dir / "sayhello.tmp").is_file())
+        self.assertFalse(list(work_dir.glob("*.tmp")))
 
     def test_code_id_references_are_tangled(self) -> None:
         work_dir = self.run_litpd("test4-codeid-use.md")
@@ -78,7 +77,7 @@ class LitpdIntegrationTests(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(completed.returncode, 0)
-        self.assertEqual(completed.stdout.strip(), "litpd 0.3.0-beta.0")
+        self.assertEqual(completed.stdout.strip(), "litpd 0.3.1-beta.0")
 
     def test_paths_with_spaces(self) -> None:
         with tempfile.TemporaryDirectory(prefix="litpd test ") as temp_dir:

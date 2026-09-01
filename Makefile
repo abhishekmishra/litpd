@@ -1,8 +1,8 @@
 .PHONY: all clean test docs dist
 
-VERSION = 0.3.0-beta.0
+VERSION = 0.3.1-beta.0
 
-PANDOC_CMD = pandoc --lua-filter=./bootstrap/codeidextract.lua --lua-filter=./bootstrap/mdtangle.lua --from=markdown
+PANDOC_CMD = pandoc --lua-filter=./bootstrap/litpd_filter.lua --from=markdown
 PANDOC_OPTS_HTML = --to=html --standalone --toc --css=litpd.css
 PANDOC_OPTS_PDF = --to=pdf --standalone --toc
 #
@@ -30,27 +30,25 @@ DIST_DIR = dist
 
 DOCS_DIR = docs
 
-RELEASE_FILES = litpd.py codeidextract.lua mdtangle.lua litpd.html litpd.css HLDDiagram.png helloworld.md
+RELEASE_FILES = litpd.py litpd_filter.lua litpd.html litpd.css HLDDiagram.png helloworld.md
 
 all: $(BUILD_DIR)/litpd.html
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/%.html: %.md litpd.css bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
+$(BUILD_DIR)/%.html: %.md litpd.css bootstrap/litpd_filter.lua | $(BUILD_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_HTML) -o $@
 	mv litpd.py $(BUILD_DIR)/
-	mv mdtangle.lua $(BUILD_DIR)/
-	mv codeidextract.lua $(BUILD_DIR)/
+	mv litpd_filter.lua $(BUILD_DIR)/
 	cp HLDDiagram.png $(BUILD_DIR)/
 	cp litpd.css $(BUILD_DIR)/
 	cp helloworld.md $(BUILD_DIR)/
 
-$(BUILD_DIR)/%.pdf: %.md bootstrap/codeidextract.lua bootstrap/mdtangle.lua | $(BUILD_DIR)
+$(BUILD_DIR)/%.pdf: %.md bootstrap/litpd_filter.lua | $(BUILD_DIR)
 	$(PANDOC_CMD) $< $(PANDOC_OPTS_PDF) -o $@
 	mv litpd.py $(BUILD_DIR)/
-	mv mdtangle.lua $(BUILD_DIR)/
-	mv codeidextract.lua $(BUILD_DIR)/
+	mv litpd_filter.lua $(BUILD_DIR)/
 
 test: all
 	$(PYTHON) -m unittest discover -s test -p "test_*.py" -v

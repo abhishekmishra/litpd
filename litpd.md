@@ -12,6 +12,7 @@ __Revisions__
 |0.1a-alpha.1|10/04/2024|Second alpha release, add code fragments with code_id support.|
 |0.2.0-beta.0|18/05/2025|First beta release, support for powershell and bash scripts and installation procedure documented.|
 |0.3.0-beta.0|01/09/2026|Replace the Lua, PowerShell, and Bash launchers with a cross-platform Python CLI.|
+|0.3.1-beta.0|01/09/2026|Replace temporary code-fragment files with an in-memory filter and organize the filter as code_id chunks.|
 
 # Introduction
 
@@ -226,7 +227,7 @@ litpd generates `program.html` by default.
 
 ```python {code_file="litpd.py"}
 
-VERSION = "0.3.0-beta.0"
+VERSION = "0.3.1-beta.0"
 USAGE = "Usage: litpd.py <inputfile.md> [pandoc options]"
 
 
@@ -260,13 +261,9 @@ def main(args: list[str]) -> int:
 In the next section of the program we now construct the pandoc command to run
 such that both the output document, and output code are generated correctly.
 
-* The `codeid_filter` variable is created to store the path to the Lua Pandoc
-  filter which will extract the code from the input document which are marked
-  with code_id and write it to individual source code fragment files with the
-  same name.
-* The `tangle_filter` variable stores the path to the Lua Pandoc
-  filter which will extract the code from the input document which are marked
-  with code_file and write it to individual source code files.
+* The `tangle_filter` variable stores the path to the Lua Pandoc filter. It
+  collects `code_id` fragments in memory, expands them, and writes code blocks
+  marked with `code_file` to their target files.
 * The command is constructed as a list of arguments. This preserves spaces and
   other characters in filenames and prevents a shell from interpreting user
   input.
@@ -274,17 +271,14 @@ such that both the output document, and output code are generated correctly.
 ```python {code_file="litpd.py"}
 
     litpd_home = Path(__file__).resolve().parent
-    codeid_filter = litpd_home / "codeidextract.lua"
-    tangle_filter = litpd_home / "mdtangle.lua"
+    tangle_filter = litpd_home / "litpd_filter.lua"
 
-    for filter_file in (codeid_filter, tangle_filter):
-        if not filter_file.is_file():
-            print(f"Error: required filter not found: {filter_file}", file=sys.stderr)
-            return 2
+    if not tangle_filter.is_file():
+        print(f"Error: required filter not found: {tangle_filter}", file=sys.stderr)
+        return 2
 
     command = [
         pandoc,
-        f"--lua-filter={codeid_filter}",
         f"--lua-filter={tangle_filter}",
         "--from=markdown",
         str(input_file),
@@ -315,294 +309,152 @@ if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
 ```
 
-## Filter Program - codeidextract.lua
+## Filter Program - litpd_filter.lua
 
-The `codeidextract.lua` program is a [pandoc lua filter][7]. A pandoc filter is
-a program which is executed by the pandoc program during its filtration phase.
-The filter has access to the abstract syntax tree (AST) of the input document.
-The access to the AST of the input document provides the filter program the
-ability to implement transformations of the input document, or add functionality
-to the document generation process that is not part of the standard pandoc
-processing.
+The `litpd_filter.lua` program is a [pandoc lua filter][7]. A pandoc filter is
+a program which is executed by Pandoc during its filtration phase. The filter
+has access to the abstract syntax tree (AST) of the input document. This access
+allows the filter program to implement transformations and functionality that
+are not part of standard Pandoc processing.
 
-The `codeidextract.lua` filter is interested in the CodeBlock section of the
-AST of the input document which have an attribute named **code_id**. The value
-of the attribute **code_id** is an identifier for the block of code in the
-CodeBlock section of the document.
+The filter is interested in `CodeBlock` sections that have either a `code_id`
+or a `code_file` attribute. The value of `code_id` identifies a reusable code
+fragment. Once the author creates such a block, it can be referenced from
+another code block with `@<CODE_ID@>`. This lets the document introduce parts
+of a program according to the flow of its ideas, independently of how source
+code is finally arranged in files.
 
-Once the author of the document creates a **code_id** CodeBlock he/she can
-now reference this **code_id** in another CodeBlock. This allows us to build
-entire programs from fragments of code in separated CodeBlocks. The document
-introduces the separate parts of the program according to the flow of the ideas
-in the document independent of how the source code will finally be placed in
-the files.
+The same filter first collects every `code_id` fragment from the AST into an
+in-memory table, then expands those references while writing `code_file`
+blocks. It replaces the earlier two-filter, temporary-file handoff: no fragment
+files are created in the working directory.
 
-Once the filter identifies a CodeBlock with a **code_id**, it extracts the code
-into a separate temporary file assigned to each **code_id**.
+The filter is itself organized as logical fragments. The final block at the end
+of this section assembles those fragments into `litpd_filter.lua`.
 
-```lua {code_file="codeidextract.lua"}
+### Program Header and State
 
-local codeidextract = {}
-
-local function get_file_name (code_block)
-    if code_block.attributes["code_id"] then
-        return code_block.attributes["code_id"] .. '.tmp'
-    end
-end
-
-local function get_file (code_block)
-    local full_path = get_file_name(code_block)
-    if full_path == nil then
-        return nil, nil
-    end
-    local file = io.open(full_path, "w")
-    return full_path, file
-end
-
-local function write_code_block (code_block, file)
-    local code = code_block.text
-    file:write(code)
-    file:write("\n")
-end
-
-local function close_file (file)
-  file:close()
-end
-
-function codeidextract.CodeBlock (code_block)
-    local full_path, file = get_file(code_block)
-    if full_path == nil then
-        return
-    end
-    print("Extracting code id at " .. full_path)
-    write_code_block(code_block, file)
-    close_file(file)
-
-    -- create a label for the code block if id exists
-    local label_text = "id: " .. code_block.attributes["code_id"]
-    return {
-        pandoc.Strong(pandoc.Str(label_text)),
-        code_block
-    }
-end
-
-return {
-    codeidextract
-}
-```
-
-## Filter Program - mdtangle.lua
-
-The `mdtangle.lua` program is also a [pandoc lua filter][7].
-
-The `mdtangle.lua` filter is only interested in the `CodeBlock` section of the
-AST which represents the code sections of the input markdown document. The
-program registers itself to read all the `CodeBlock` sections. When a new code
-block occurs, the filter program notes down its attribute named `code_file`.
-If such an attribute exists then the code inside the `CodeBlock` is written
-to the file at `code_file` in append mode.
-
-Thus the effect of the filter is to take the code blocks from the literate
-program and write them in their own target files.
-
-Lets now look at the various parts of the program.
-
-### Program Header
-
-```lua {code_file="mdtangle.lua"}
---- md-tangle.lua - Lua filter for pandoc to tangle code blocks into one or more
--- files.
---
+```lua {code_id="filter_header"}
+--- litpd_filter.lua - Pandoc filter for tangling literate-program source files.
 -- license: MIT see LICENSE file
--- date: 21/03/2024
 -- author: Abhishek Mishra
-```
 
-### Module Declaration
-
-The pandoc filter API expects a lua table to be returned from the program. The
-table should contain entries for each AST node type that the filter intends to
-process.
-
-We define a table named `tangle` which will have just one entry `CodeBlock` by
-the end of the program. `tangle` will be returned to pandoc as the definition
-of the filter module.
-
-```lua {code_file="mdtangle.lua"}
-
-local tangle = {}
+local fragments = {}
+local written_files = {}
 
 ```
 
-### Read `code_file` Attribute
+### Collect Fragments
 
-As discussed earlier we have made one addition to the pandoc markdown format,
-to support literate programming. Each code block which will be generated into
-its own file must specify the output program file name in the fenced code block.
-This output program file is specified as the value of a special attribute
-`code_file` of the fenced code block.
+The first pass visits every code block, including blocks nested in other
+structures, and records its text by `code_id`. This is the in-memory equivalent
+of the old extraction step, but its data exists only for the duration of the
+Pandoc run.
 
-The function `get_file_name` accepts a `code_block` value as argument. This
-`code_block` is received by the `CodeBlock` handler in our program. Therefore it
-is a pandoc object which has an `attributes` table.
-
-The function retrieves the `code_file` value and stores it in `file_name`. If
-there is no `code_file` defined for the fenced block, then its value is `nil`.
-
-The `file_name` is returned to the caller.
-
-```lua {code_file="mdtangle.lua"}
-
-local function get_file_name (code_block)
-    return code_block.attributes["code_file"]
+```lua {code_id="filter_collect"}
+local function collect_fragments(doc)
+    doc:walk({
+        CodeBlock = function(code_block)
+            local code_id = code_block.attributes["code_id"]
+            if code_id then
+                fragments[code_id] = code_block.text
+            end
+        end,
+    })
 end
+
 ```
 
-### File I/O
+### Expand References
 
-The program defines three functions to perform I/O to the output program
-file(s).
+References are expanded recursively from the in-memory table. Unknown and
+circular references fail clearly instead of silently producing incomplete code.
 
-* `get_file`: Takes the `code_block` as argument, and gets the `full_path` of
-  the file mentioned in the attributes of the fenced code blcok. The it opens a
-  file in append node for the given `full_path`. Both `full_path` and `file` are
-  returned to the caller.
-* `write_code_block`: This function takes a `code_block` and a `file` already
-  opened to write it. It writes the content of the `code_block` followed by a
-  newline in the `file`.
-* `close_file`: closes the given `file`.
-
-
-```lua {code_file="mdtangle.lua"}
-
---- check if given path exists
----@param path string
----@return boolean
-local function exists(path)
-    local file = io.open(path, "r")
-    if file then
-        file:close()
-        return true
-    end
-    return false
+```lua {code_id="filter_expand"}
+local function expand(code, stack)
+    stack = stack or {}
+    return (code:gsub("@<([A-Za-z0-9_]+)@>", function(code_id)
+        local fragment = fragments[code_id]
+        if not fragment then
+            error("Unknown code_id: " .. code_id)
+        end
+        if stack[code_id] then
+            error("Circular code_id reference: " .. code_id)
+        end
+        stack[code_id] = true
+        local expanded = expand(fragment, stack)
+        stack[code_id] = nil
+        return expanded
+    end))
 end
 
---- file contents
---@param path string
---@return string contents
-local function file_contents(path)
-    local file = io.open(path, "r")
-    local contents = nil
-    if file then
-        contents = file:read("*all")
-        file:close()
-    end
-    return contents
-end
+```
 
-local function get_file (code_block)
-    local full_path = get_file_name(code_block)
-    if full_path == nil then
-        return nil, nil
-    end
-    local file = io.open(full_path, "a")
-    return full_path, file
-end
+### Write and Label Code Blocks
 
-local function write_code_block (code_block, file)
-    local code = code_block.text
+Each code block generated into its own file specifies that output filename in
+the fenced block's `code_file` attribute. The first block for a target opens it
+in write mode; later blocks append. Therefore a fresh generation replaces old
+output rather than appending to it from a previous run. Code blocks continue to
+receive `id:` and `file:` labels in the readable document.
 
-    local code_id_replace = true
-
-    while code_id_replace do
-      local t = {}
-      local i = 0
-      local found_code_id = false
-
-      while true do
-          local code_id
-          i, _, code_id = string.find(code, "@<(%a+)@>", i+1)
-          if i == nil then break end
-          table.insert(t,
-            {
-              index = i,
-              code_id = code_id
-            }
-          )
-          found_code_id = true
-      end
-
-      for _, v in ipairs(t) do
-          print('code id found at ', v.index, ' code_id = ', v.code_id)
-          local cidfile = v.code_id .. '.tmp'
-          if exists(cidfile) then
-              print('file for code_id', v.code_id, 'exists at', cidfile)
-              local contents = file_contents(cidfile)
-              -- print(contents)
-              code = code:gsub("@<" .. v.code_id .. "@>", contents)
-          end
-      end
-
-      -- repeat the search only if there is a code_id found in current
-      -- iteration, which means there might be more after replacement
-      if not found_code_id then
-         code_id_replace = false
-      end
+```lua {code_id="filter_write"}
+local function write_code_block(code_block)
+    local full_path = code_block.attributes["code_file"]
+    if not full_path then
+        return nil
     end
 
-    file:write(code)
-    -- print(code)
+    local mode = written_files[full_path] and "a" or "w"
+    local file, error_message = io.open(full_path, mode)
+    if not file then
+        error("Could not open " .. full_path .. ": " .. error_message)
+    end
+    file:write(expand(code_block.text))
     file:write("\n")
-end
-
-local function close_file (file)
     file:close()
+    written_files[full_path] = true
+    return full_path
 end
-```
 
-### `CodeBlock` AST Hook
-
-The `CodeBlock` function in the filter module will be called by pandoc when it
-encounters a code block in the input markdown document. The only argument of
-the function is `code_block` which gets the text of the code written in the
-fenced code block.
-
-* We retrieve the `full_path` to the `code_block`, and the corresponding
-  writable `file` object using the `get_file` function defined above.
-* If the returned `full_path` is `nil`, then there is nothing to do and the
-  method returns.
-* Otherwise the program writes the `code_block` to the `file` using the function
-  `write_code_block`.
-* Finally we close the `file` using the `close_file` function.
-
-```lua {code_file="mdtangle.lua"}
-
-function tangle.CodeBlock (code_block)
-    local full_path, file = get_file(code_block)
-    if full_path == nil then
-        return
+local function label_code_block(code_block)
+    local labels = {}
+    local code_id = code_block.attributes["code_id"]
+    if code_id then
+        table.insert(labels, pandoc.Strong(pandoc.Str("id: " .. code_id)))
     end
-    print("Tangling code block at " .. full_path)
-    write_code_block(code_block, file)
-    close_file(file)
 
-    local label_text = "file: " .. full_path
-    return {
-        pandoc.Strong(pandoc.Str(label_text)),
-        code_block
-    }
+    local full_path = write_code_block(code_block)
+    if full_path then
+        table.insert(labels, pandoc.Strong(pandoc.Str("file: " .. full_path)))
+    end
+
+    if #labels == 0 then
+        return nil
+    end
+    table.insert(labels, code_block)
+    return labels
+end
+
+```
+
+### Pandoc Entry Point
+
+```lua {code_id="filter_entry"}
+function Pandoc(doc)
+    collect_fragments(doc)
+    return doc:walk({CodeBlock = label_code_block})
 end
 ```
 
-### Module Export
+### Assemble the Filter
 
-Lastly, we export the module for use in pandoc.
-
-```lua {code_file="mdtangle.lua"}
-
-return {
-    tangle
-}
+```lua {code_file="litpd_filter.lua"}
+@<filter_header@>
+@<filter_collect@>
+@<filter_expand@>
+@<filter_write@>
+@<filter_entry@>
 ```
 
 # Future Plans
